@@ -1,3 +1,4 @@
+import contextlib
 from collections.abc import Callable
 from typing import Any, Protocol
 
@@ -18,19 +19,13 @@ def default_provider(*, model: str, messages: list[dict[str, Any]], **kwargs: An
 
 
 def _quiet_litellm(litellm_module: Any) -> None:
-    try:
+    with contextlib.suppress(Exception):
         litellm_module.suppress_debug_info = True
-    except Exception:
-        pass
-    try:
+    with contextlib.suppress(Exception):
         litellm_module.set_verbose = False
-    except Exception:
-        pass
     for attr in ("telemetry",):
-        try:
+        with contextlib.suppress(Exception):
             setattr(litellm_module, attr, False)
-        except Exception:
-            pass
 
 
 def resolve_provider(provider: Callable | None) -> Callable:
