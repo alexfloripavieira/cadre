@@ -57,3 +57,10 @@ tmp/
 
 # docker volumes (local)
 infra/docker/data/
+
+# cadre runtime artifacts (run-local, not source of truth)
+ai-docs/.cadre-log/
+ai-docs/.cadre-checkpoints.db
+ai-docs/.squad-log/
+.cadre/
+.cadre-log/
