@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cadre-labs",
+  "owner": {
+    "name": "alexfloripavieira"
+  },
+  "plugins": [
+    {
+      "name": "cadre",
+      "description": "Agentic delivery plugin for Claude Code — retry budgets, multi-provider fallback, doom-loop detection, cost guardrails, SEP audit log.",
+      "version": "0.1.0",
+      "source": "./plugins/cadre"
+    }
+  ]
+}

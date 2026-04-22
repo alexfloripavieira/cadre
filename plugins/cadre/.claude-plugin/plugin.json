@@ -1,0 +1,8 @@
+{
+  "name": "cadre",
+  "description": "A cadre of AI agents for serious software delivery. Agentic delivery plugin for Claude Code with multi-provider fallback, retry budgets, doom-loop detection, cost guardrails, and structured audit log (SEP).",
+  "version": "0.1.0",
+  "author": {
+    "name": "alexfloripavieira"
+  }
+}

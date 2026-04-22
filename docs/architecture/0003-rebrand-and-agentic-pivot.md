@@ -142,7 +142,7 @@ Negative:
 - ADR 0004 — the concrete design of agentic orchestration: tool interfaces, spawn
   semantics, memory format, critic loops.
 - ADR 0005 — the plugin manifest shape for Claude Code, and the mapping between
-  `packages/skills/*` and plugin-exposed commands.
+  `plugins/cadre/skills/*` and plugin-exposed commands.
 - README rewrite around the Cadre name and agentic positioning (done alongside this
   ADR).
 - Legacy Keel references: all production docs, code, and config swept in the same

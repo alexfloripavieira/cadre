@@ -93,14 +93,17 @@ When unsure, stop and ask.
 
 ## 7. Repository layout reminders
 
-- `services/runtime/` — Python runtime. Owns its own `pyproject.toml`, tests, and lint.
+- `.claude-plugin/marketplace.json` — Claude Code marketplace manifest (root).
+- `plugins/cadre/` — Claude Code plugin surface. Contains `agents/`, `skills/`,
+  `templates/`, `runtime-policy.yaml`, `.claude-plugin/plugin.json`.
+  **No executable code.** Markdown, YAML, templating only.
+- `services/runtime/` — Python runtime (`cadre` package). Library used by plugin.
 - `services/gateway/` — reserved for Go gateway. Do not add Python or TS code here.
 - `services/web/` — reserved for TypeScript dashboard. Do not add backend code here.
-- `packages/agents/`, `packages/skills/`, `packages/templates/`, `packages/policy/` —
-  vendor-neutral specs. **No executable code.** Markdown, YAML, or templating only.
 - `infra/docker/`, `infra/terraform/` — deployment artifacts. Keep production and
   local-dev concerns separated.
 - `docs/architecture/` — ADRs. New architectural decisions get a numbered ADR here.
+- `ai-docs/` — run-local artifacts, blueprints, archive.
 - `scripts/` — cross-repo tooling. Must pass shellcheck.
 
 ## 8. Licensing awareness
@@ -117,10 +120,10 @@ Cadre is **BSL 1.1**, converting to **Apache 2.0** on **2030-04-21**.
 ## 9. Contract-first changes
 
 Cadre is contract-driven. Before changing agent, skill, policy, or template files in
-`packages/`, consider downstream consumers:
+`plugins/cadre/`, consider downstream consumers:
 
 - Runtime loaders in `services/runtime/`.
-- Scripts in `scripts/`.
+- Scripts in `scripts/` and `plugins/cadre/scripts/`.
 - Templates referenced from other templates.
 
 Breaking contract changes require a version bump in the affected spec and a note in
@@ -133,7 +136,7 @@ the PR description explaining the migration path.
 - CI failures are not "flakiness" by default — investigate the root cause before
   reruns.
 - When editing scripts, run `shellcheck` locally.
-- When editing `packages/policy/runtime-policy.yaml`, validate it parses as YAML.
+- When editing `plugins/cadre/runtime-policy.yaml`, validate it parses as YAML.
 
 ---
 

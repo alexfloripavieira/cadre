@@ -31,7 +31,7 @@ Use **LiteLLM** as the single provider-agnostic LLM client for the Cadre runtime
   unified `completion()` / `acompletion()` interface.
 - Provider selection is expressed as **model strings** (e.g. `anthropic/claude-opus-4-7`,
   `openai/gpt-4.1`, `groq/llama-3.3-70b`, `ollama/llama3`) and configured per agent/skill
-  in `packages/policy/runtime-policy.yaml`.
+  in `plugins/cadre/runtime-policy.yaml`.
 - Credentials are loaded from environment variables; no provider-specific SDK is
   imported directly by Cadre code.
 - The fallback matrix (ADR TBD) is implemented on top of LiteLLM's `completion_with_fallbacks`,

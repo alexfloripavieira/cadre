@@ -1,8 +1,16 @@
 # ADR 0001 — Monorepo Layout
 
-- Status: Accepted
+- Status: Accepted (amended by ADR 0005)
 - Date: 2026-04-21
 - Deciders: Alexsander Vieira
+
+> **Amendment note (2026-04-22):** ADR 0005 introduces a `plugins/cadre/` tree
+> alongside `services/` to match the Claude Code plugin distribution contract.
+> The contracts previously described here as living under `packages/` now live
+> under `plugins/cadre/`. The `packages/` directory is retired. All other
+> decisions in this ADR (polyglot services, contracts separated from code,
+> path-scoped CI, future extractability) remain in force. See ADR 0005 for the
+> amended layout.
 
 ## Context
 

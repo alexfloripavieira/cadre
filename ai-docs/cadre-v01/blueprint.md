@@ -78,7 +78,7 @@ Explicit non-goals for v0.1:
 
 Not expanded here — see ADRs 0001–0004. One-line summary per decision:
 
-- Monorepo with `services/` (code) + `packages/` (contracts). Python runtime MVP.
+- Monorepo with `services/` (code) + `plugins/cadre/` (contracts). Python runtime MVP.
 - LiteLLM as the single provider-agnostic client.
 - Rebranded from Keel; positioned as Claude Code plugin, not standalone runtime.
 - Three authority levels (scripted, planned, emergent); v0.1 ships Levels 1 and 2.
@@ -87,10 +87,10 @@ Not expanded here — see ADRs 0001–0004. One-line summary per decision:
 
 ### Week 1 — Contracts and spec cards
 
-1. Extend `packages/agents/*.md` frontmatter with the spec-card schema from ADR 0004. Retrofit the 4 existing agents (`prd-author`, `inception-author`, `tasks-planner`, `work-item-mapper`).
+1. Extend `plugins/cadre/agents/*.md` frontmatter with the spec-card schema from ADR 0004. Retrofit the 4 existing agents (`prd-author`, `inception-author`, `tasks-planner`, `work-item-mapper`).
 2. Author 4 new agents: `orchestrator`, `backend-developer`, `frontend-developer`, `security-reviewer`. Copy shape from existing agents in claude-tech-squad where appropriate, add spec cards.
 3. Extend skill frontmatter schema with `authority_level`, `intent`, `candidate_agents`, `required_agents`, `max_budget_usd`, `max_duration_seconds`.
-4. Write `packages/skills/implement/SKILL.md` at Level 2. Declare candidates: pm, tech-lead, backend-dev, frontend-dev, test-planner, code-reviewer.
+4. Write `plugins/cadre/skills/implement/SKILL.md` at Level 2. Declare candidates: pm, tech-lead, backend-dev, frontend-dev, test-planner, code-reviewer.
 5. ADR 0005 — plugin manifest shape (Claude Code plugin contract).
 
 ### Week 2 — Runtime core
@@ -208,8 +208,8 @@ Budget: these run weekly in CI with a small chaos token budget.
 
 In order, smallest first:
 
-1. **Extend spec-card frontmatter** on the 4 existing agents (`packages/agents/*.md`). ~30 min.
-2. **Add `authority_level` + intent declaration fields** to the existing `packages/skills/inception/SKILL.md`. Classify as Level 2. ~30 min.
+1. **Extend spec-card frontmatter** on the 4 existing agents (`plugins/cadre/agents/*.md`). ~30 min.
+2. **Add `authority_level` + intent declaration fields** to the existing `plugins/cadre/skills/inception/SKILL.md`. Classify as Level 2. ~30 min.
 3. **Author `orchestrator` agent** with tool interface stubs. ~1 h.
 4. **Research + write ADR 0005 (plugin manifest)**. ~2 h research + drafting.
 5. **First code: `cadre.runtime.call()` skeleton** with retry budget only, SEP log write. ~3 h.

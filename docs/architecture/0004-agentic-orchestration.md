@@ -56,7 +56,7 @@ Declared as `authority_level: 1 | 2 | 3` in each skill's frontmatter.
 
 ### 2. Agent metadata schema (the "spec card")
 
-Every agent under `packages/agents/*.md` must declare frontmatter that makes the
+Every agent under `plugins/cadre/agents/*.md` must declare frontmatter that makes the
 agent **selectable by a planner**:
 
 ```yaml
@@ -352,10 +352,10 @@ Negative:
 
 This ADR is a contract, not an implementation. Next steps, in order:
 
-1. Extend the agent spec frontmatter schema in `packages/agents/` with the new
+1. Extend the agent spec frontmatter schema in `plugins/cadre/agents/` with the new
    metadata fields. Update the 4 existing agents.
 2. Introduce `authority_level` to skill frontmatter. Classify existing skills.
-3. Author the orchestrator agent (`packages/agents/orchestrator.md`) with its
+3. Author the orchestrator agent (`plugins/cadre/agents/orchestrator.md`) with its
    tool interface (`propose_plan`, `request_agent`, `emit_decision`).
 4. Extend `cadre.runtime.call()` to accept `phase` and route SEP log accordingly.
 5. Implement `request_agent` tool in the runtime.

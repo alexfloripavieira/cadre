@@ -29,21 +29,29 @@ You bring the task ("ship feature X", "hot-fix this incident", "refactor this mo
 ## Architecture
 
 ```
+.claude-plugin/
+  marketplace.json       Claude Code marketplace manifest
+
+plugins/
+  cadre/                 Claude Code plugin surface (user-facing)
+    .claude-plugin/plugin.json
+    agents/              Agent specifications (markdown + ADR 0004 spec cards)
+    skills/              Skill specifications
+    templates/           PRD, TechSpec, Tasks templates
+    runtime-policy.yaml  Retry, fallback, gates, observability
+
 services/
-  runtime/   Python — reliability runtime powering the agent loop
-  gateway/   Go — webhook receiver and queue worker (later)
-  web/       TypeScript — dashboard (later)
+  runtime/               Python reliability runtime powering the agent loop
+  gateway/               Go — webhook receiver and queue worker (later)
+  web/                   TypeScript — dashboard (later)
 
-packages/
-  agents/    Agent specifications (markdown)
-  skills/    Skill specifications (agentic workflows)
-  templates/ PRD, TechSpec, Tasks output templates
-  policy/    Runtime policy (retry, fallback, gates, observability)
-
-infra/       Docker, Terraform, deployment artifacts
+docs/                    Architecture decision records, contracts, guides
+infra/                   Docker, Terraform, deployment artifacts
+ai-docs/                 Run-local artifacts, archive, SEP logs
+scripts/                 Repo-level tooling
 ```
 
-See [`docs/architecture/0001-monorepo-layout.md`](docs/architecture/0001-monorepo-layout.md) for the layout rationale, [`docs/architecture/0002-multi-provider-llm.md`](docs/architecture/0002-multi-provider-llm.md) for provider strategy, and [`docs/architecture/0003-rebrand-and-agentic-pivot.md`](docs/architecture/0003-rebrand-and-agentic-pivot.md) for the positioning of this project.
+See [`docs/architecture/0001-monorepo-layout.md`](docs/architecture/0001-monorepo-layout.md) for the layout rationale (amended by ADR 0005), [`docs/architecture/0002-multi-provider-llm.md`](docs/architecture/0002-multi-provider-llm.md) for provider strategy, [`docs/architecture/0003-rebrand-and-agentic-pivot.md`](docs/architecture/0003-rebrand-and-agentic-pivot.md) for positioning, [`docs/architecture/0004-agentic-orchestration.md`](docs/architecture/0004-agentic-orchestration.md) for orchestration design, and [`docs/architecture/0005-plugin-manifest.md`](docs/architecture/0005-plugin-manifest.md) for the plugin layout.
 
 ## Commercial model
 
