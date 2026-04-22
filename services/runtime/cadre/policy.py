@@ -12,6 +12,7 @@ class Policy:
     fallback_models: tuple[str, ...] = field(default_factory=tuple)
     max_budget_usd: float | None = None
     max_duration_seconds: float | None = None
+    doom_loop_same_error_threshold: int = 0
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "Policy":
@@ -37,6 +38,14 @@ class Policy:
             )
         if self.max_budget_usd is not None and self.max_budget_usd <= 0:
             raise PolicyError(f"max_budget_usd must be > 0 when set, got {self.max_budget_usd}")
+        if self.doom_loop_same_error_threshold < 0:
+            raise PolicyError(
+                f"doom_loop_same_error_threshold must be >= 0, got {self.doom_loop_same_error_threshold}"
+            )
+        if self.doom_loop_same_error_threshold == 1:
+            raise PolicyError(
+                "doom_loop_same_error_threshold of 1 is meaningless; use 0 to disable or >= 2"
+            )
 
     def backoff_delay(self, attempt: int) -> float:
         if attempt < 1:
