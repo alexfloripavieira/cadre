@@ -1,26 +1,62 @@
-# cadre (plugin)
+# cadre (Claude Code plugin)
 
-Claude Code plugin surface for Cadre. Contains the agent specs, skill specs,
-templates, and runtime policy that Claude Code loads when the plugin is
-installed.
+The plugin surface of Cadre — what Claude Code loads when you run
+`/plugin install alexfloripavieira/cadre`.
 
-See the repository root `README.md` for the full product description.
+For the full project, see the repository root `README.md`. For user
+docs, see `/docs/` (install, manual, API reference). For the decision
+records, see `/docs/architecture/`.
 
-## Layout
+## Contents
 
-- `.claude-plugin/plugin.json` — plugin manifest.
-- `agents/` — agent specifications (markdown + YAML frontmatter per ADR 0004).
-- `skills/` — skill specifications.
-- `templates/` — PRD, TechSpec, Tasks output templates.
-- `runtime-policy.yaml` — retry budgets, fallback matrix, doom-loop patterns,
-  cost ceilings, observability config.
+```
+.claude-plugin/plugin.json   plugin manifest (name, description, version)
+agents/                      agent specifications (markdown + ADR 0004 spec cards)
+skills/                      skill specifications
+  inception/SKILL.md         /inception — PRD → TechSpec
+  implement/SKILL.md         /implement — agentic feature delivery
+  bug-fix/SKILL.md           /bug-fix — reproduce + fix + review
+  review/SKILL.md            /review — structured diff / PR review
+templates/                   PRD, TechSpec, Tasks, Task templates
+runtime-policy.yaml          retry, fallback, budget, and doom-loop profiles
+```
+
+## Install from the Claude Code CLI
+
+```
+/plugin install alexfloripavieira/cadre
+```
+
+Then invoke any of the shipped skills:
+
+```
+/inception ai-docs/prd-<slug>/prd.md
+/implement <one-sentence intent>
+/bug-fix <bug report>
+/review <diff path or PR URL>
+```
+
+Claude Code provides the LLM access via your subscription (Max, Teams,
+or Pro). If you embed the Python runtime separately (for CI, dogfooding,
+or non-Claude-Code callers), you provide your own credentials and the
+runtime calls LiteLLM directly — see `/docs/PROVIDERS.md`.
 
 ## Runtime dependency
 
-The Python runtime library `cadre` (source at `../../services/runtime/`) must be
-installed in the user's environment for skills that invoke the reliability
-wrapper. In v0.1 this is a manual step; in v0.2 the plugin bundles the runtime.
+Every skill invocation goes through `cadre.Runtime.call()` under the
+hood. The runtime is the Python package at `services/runtime/cadre/`.
+The reliability primitives (retry budget, fallback, doom-loop
+detection, cost ceiling, SEP audit log, checkpoints) are enforced at
+that layer, not inside the plugin markdown.
+
+For callers outside Claude Code, install the runtime:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ../../services/runtime[dev]
+```
 
 ## License
 
-BSL 1.1 (converts to Apache 2.0 on 2030-04-21). See repository root `LICENSE`.
+BSL 1.1 (converts to Apache 2.0 on 2030-04-21). See repository root
+`LICENSE`.
