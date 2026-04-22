@@ -1,0 +1,64 @@
+name: keel-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: keel-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keel
+      POSTGRES_USER: keel
+      POSTGRES_PASSWORD: keel
+    ports:
+      - "5432:5432"
+    volumes:
+      - keel-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keel -d keel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: keel-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - keel-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  runtime:
+    build:
+      context: ../..
+      dockerfile: infra/docker/runtime.Dockerfile
+    container_name: keel-runtime
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      KEEL_DATABASE_URL: postgresql://keel:keel@postgres:5432/keel
+      KEEL_REDIS_URL: redis://redis:6379/0
+      KEEL_ENV: development
+    env_file:
+      - ../../.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../services/runtime:/app/services/runtime
+      - ../../packages:/app/packages:ro
+    working_dir: /app/services/runtime
+    command: ["uvicorn", "keel_runtime.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+volumes:
+  keel-postgres-data:
+  keel-redis-data:

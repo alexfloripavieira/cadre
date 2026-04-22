@@ -1,0 +1,59 @@
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+pip-wheel-metadata/
+
+# pytest / coverage / mypy / ruff
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# node / ts (future)
+node_modules/
+.pnp.*
+dist/
+.next/
+.turbo/
+
+# go (future)
+bin/
+*.exe
+*.test
+*.out
+
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# os
+.DS_Store
+Thumbs.db
+
+# local state
+*.log
+*.local
+tmp/
+.tmp/
+
+# docker volumes (local)
+infra/docker/data/

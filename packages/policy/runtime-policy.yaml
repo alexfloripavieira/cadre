@@ -1,0 +1,665 @@
+version: 5.22.0
+
+docs_lookup:
+  preferred: context7
+  fallback: repo-fallback
+  fallback_requires:
+    - cite repository files used
+    - state assumptions explicitly
+    - do not block the workflow on documentation tool absence alone
+
+failure_handling:
+  structural_retry_same_prompt_max: 2
+  fallback_attempt_max: 1
+  unresolved_action_gate:
+    options: [R, S, X]
+    meanings:
+      R: retry once more with the same prompt
+      S: skip and continue with explicit risk logging
+      X: abort the run
+  compact_prompt_fallback:
+    enabled: true
+    description: >
+      When a teammate fails silently (empty output, no result_contract, stopped mid-turn),
+      do NOT re-spawn with the same prompt. Instead, spawn a retry variant with a compacted
+      prompt that strips non-essential context (full repo dumps, full upstream outputs) and
+      keeps only digests plus the user intent. This was introduced after the 2026-04-18
+      factory retrospective found PO silent failures in 3 of 5 discoveries caused by context
+      saturation.
+    triggers:
+      - silent failure (empty output, no result_contract)
+      - stopped mid-turn after a Read tool call
+      - prompt size > 30000 tokens AND teammate returned confidence=low
+    naming_convention:
+      primary_retry: "<agent>-retry"
+      fallback_variant: "<agent>-v2"
+    compaction_rules:
+      - replace full upstream outputs with their ARC digests (<= 500 tokens each)
+      - drop repository context beyond the feature scope
+      - keep: user intent, constraints, result_contract requirement, verification_checklist requirement
+    emit_on_invoke: "[Compact Retry] {{agent}} | variant={{retry_name}} | reason={{trigger}}"
+
+cost_guardrails:
+  token_budget:
+    discovery_max_tokens: 2000000
+    implement_max_tokens: 4000000
+    squad_max_tokens: 6000000
+    hotfix_max_tokens: 1000000
+    default_max_tokens: 1500000
+  cost_tracking:
+    track_per_teammate: true
+    required: true
+    fields:
+      - tokens_input
+      - tokens_output
+      - estimated_cost_usd
+      - duration_ms
+    field_policy:
+      tokens_input:
+        required: true
+        null_allowed: true
+        zero_placeholder_allowed: false
+      tokens_output:
+        required: true
+        null_allowed: true
+        zero_placeholder_allowed: false
+    rationale: >
+      2026-04-18 retrospective found only 11% of SEP logs had usable cost data
+      (red KPI). Zero-placeholders were indistinguishable from unmeasured runs.
+      null is acceptable (measurement unavailable); 0 is NOT acceptable as a
+      fill-in — skills must record actual measurement or null.
+  circuit_breaker:
+    enabled: true
+    warn_at_percent: 75
+    halt_at_percent: 100
+    on_warn: "emit [Cost Warning] {{skill}} | {{percent}}% of token budget consumed ({{tokens_used}}/{{tokens_max}})"
+    on_halt: "emit [Gate] Cost Limit Reached | {{skill}} consumed 100% of token budget. Options: [E] Extend budget by 50% / [X] Abort"
+
+retry_budgets:
+  review_cycles_max: 3
+  qa_cycles_max: 2
+  conformance_cycles_max: 2
+  quality_fix_cycles_max: 2
+  uat_cycles_max: 2
+
+doom_loop_detection:
+  enabled: true
+  strategy: divergence_check
+  rules:
+    - name: growing_diff
+      description: each retry produces a larger diff than the previous — the agent is diverging
+      condition: "diff_size(retry_N) > diff_size(retry_N-1) for 2 consecutive retries"
+      action: halt_and_fallback
+    - name: oscillating_fix
+      description: the agent reverts a previous fix — it is oscillating between two states
+      condition: "retry_N restores lines removed in retry_N-1 or removes lines added in retry_N-1"
+      action: halt_and_fallback
+    - name: same_error
+      description: the same test or lint error appears in consecutive retries unchanged
+      condition: "error_signature(retry_N) == error_signature(retry_N-1)"
+      action: halt_and_fallback
+  on_detection: "emit [Doom Loop Detected] {{agent}} | pattern={{rule_name}} | retries={{count}} — halting retry cycle and invoking fallback"
+  escalation: surface unresolved gate to user with doom loop evidence
+
+auto_advance:
+  enabled: true
+  description: >
+    When all agents in a phase return high confidence and zero BLOCKING findings,
+    the orchestrator may advance automatically without pausing for a user gate.
+    The advance is logged and the user is informed post-hoc.
+  conditions:
+    all_of:
+      - every agent in the phase returned confidence=high
+      - zero BLOCKING findings across all agents in the phase
+      - zero failed agents (no retry or fallback was needed)
+      - the gate is not in the mandatory_gates list
+  mandatory_gates:
+    - uat
+    - release-sign-off
+    - deploy-checklist
+    - conformance-audit
+    - diagnosis-confirm
+    - implement-bridge
+  on_auto_advance: "emit [Auto-Advanced] {{gate_name}} | all agents returned confidence=high, zero BLOCKING findings — advancing without user gate"
+  on_skip: "emit [Gate] {{gate_name}} | auto-advance conditions not met — waiting for user input"
+
+inline_health_check:
+  enabled: true
+  description: >
+    Lightweight self-regulation that runs after every teammate completes.
+    Zero extra tokens — the orchestrator evaluates health signals from the
+    teammate's result_contract and execution metadata, then adjusts the
+    context for the next teammate if needed. Like an immune system: reacts
+    in real-time during the run, not after.
+  trigger: after every [Teammate Done] or [Teammate Retry] or [Fallback Invoked]
+  signals:
+    - name: retry_detected
+      condition: "teammate required at least 1 retry"
+      action: "append retry context to next teammate prompt: 'Previous teammate <name> required <N> retries for: <reason>. Avoid the same pattern.'"
+      severity: warning
+    - name: fallback_used
+      condition: "teammate was replaced by a fallback agent"
+      action: "append fallback context to next teammate prompt: 'Agent <primary> failed and was replaced by <fallback>. The fallback output may differ in style — validate consistency.'"
+      severity: warning
+    - name: doom_loop_short_circuit
+      condition: "doom loop was detected during retry"
+      action: "append divergence evidence to fallback and next teammate: 'Doom loop detected on <agent>: <pattern>. Root cause: <evidence>. Do not repeat the same approach.'"
+      severity: critical
+    - name: token_budget_pressure
+      condition: "tokens_used > 75% of tokens_max"
+      action: "instruct remaining teammates to minimize token usage: 'Token budget at <percent>%. Produce concise output. Skip optional analysis. Focus on required deliverables only.'"
+      severity: warning
+    - name: low_confidence_chain
+      condition: "2+ consecutive teammates returned confidence=low"
+      action: "emit [Health Warning] low confidence chain — <N> consecutive teammates returned confidence=low. Surface to user: 'Multiple teammates are uncertain about their output. Consider reviewing intermediate results before continuing.'"
+      severity: critical
+    - name: blocking_findings_accumulating
+      condition: "total BLOCKING findings across completed teammates > 3"
+      action: "emit [Health Warning] accumulating blockers — <N> BLOCKING findings across <M> teammates. Recommend pausing to resolve before spawning more teammates."
+      severity: critical
+    - name: reviewer_silent_failure
+      condition: "reviewer teammate returned empty output, no result_contract, or stopped mid-turn after a Read tool call without producing Findings or verdict"
+      action: "emit [Health Warning] reviewer silent failure detected — do NOT re-spawn reviewer with the same prompt. Append to fallback prompt: 'The primary reviewer stopped mid-turn. You MUST produce ## Findings, ## Pre-existing Findings, a verdict line, result_contract, and verification_checklist before ending. Do not call Read and stop. Complete the full review in one turn.'"
+      severity: critical
+  trace_line: "[Health Check] <teammate> | signals: <list_of_triggered_signals_or_ok>"
+
+entropy_management:
+  factory_retrospective_auto_trigger:
+    enabled: true
+    trigger_after_runs: 5
+    description: >
+      After every 5th skill run that writes a SEP log, the orchestrator
+      automatically suggests running /factory-retrospective. The user
+      can accept or dismiss. This prevents entropy accumulation.
+    counter_file: ai-docs/.squad-log/.retro-counter
+    on_trigger: >
+      emit [Entropy Check] {{run_count}} runs since last retrospective —
+      recommend running /factory-retrospective.
+      Run now? [Y/N]
+    on_dismiss: reset counter and continue
+  orphan_detection:
+    enabled: true
+    check_at_preflight: true
+    description: >
+      During preflight of /implement and /squad, check for orphaned
+      discoveries (implement_triggered=false) older than 7 days.
+      Emit a warning if found.
+    stale_threshold_days: 7
+    on_detection: "emit [Preflight Warning] {{count}} orphaned discovery(ies) found older than {{days}} days — consider running /factory-retrospective"
+
+tool_allowlists:
+  description: >
+    Default tool allowlists per agent category. Agents may override
+    via tool_allowlist in their frontmatter. The orchestrator must not
+    provide tools outside the resolved allowlist when spawning an agent.
+  categories:
+    analysis:
+      tools: [Read, Glob, Grep, WebSearch, WebFetch]
+      agents: [pm, po, business-analyst, planner, architect, techlead, tech-lead,
+               reviewer, code-reviewer, security-reviewer, privacy-reviewer,
+               compliance-reviewer, accessibility-reviewer, code-quality,
+               performance-engineer, observability-engineer, monitoring-specialist,
+               analytics-engineer, design-principles-specialist, test-planner,
+               llm-eval-specialist, llm-cost-analyst, llm-safety-reviewer,
+               cost-optimizer, growth-engineer, solutions-architect, agent-architect,
+               conversational-designer, search-engineer, django-pm,
+               prd-author, inception-author, tasks-planner, work-item-mapper]
+    implementation:
+      tools: [Read, Glob, Grep, Bash, Edit, Write]
+      agents: [backend-dev, frontend-dev, mobile-dev, data-engineer, platform-dev,
+               tdd-specialist, django-backend, django-frontend, javascript-developer,
+               python-developer, react-developer, typescript-developer,
+               vue-developer, shell-developer, ml-engineer, ai-engineer,
+               rag-engineer, prompt-engineer, integration-engineer,
+               design-system-engineer, qa-tester]
+    documentation:
+      tools: [Read, Glob, Grep, Edit, Write]
+      agents: [docs-writer, tech-writer, jira-confluence-specialist, developer-relations,
+               devex-engineer]
+    operations:
+      tools: [Read, Glob, Grep, Bash, Edit, Write]
+      agents: [devops, ci-cd, dba, cloud-architect, sre, release, chaos-engineer,
+               incident-manager, security-engineer, backend-architect, frontend-architect,
+               hexagonal-architect, api-designer, data-architect, ux-designer, qa]
+    orchestrator:
+      tools: [Read, Glob, Grep, Bash, Edit, Write, Agent]
+      agents: [incident-manager]
+
+severity_policy:
+  blocking:
+    - security vulnerability
+    - pii or secret leak
+    - privacy violation
+    - failing required tests
+    - ci-breaking lint or static-analysis failure
+    - wcag a or aa failure
+    - contract-breaking api or schema regression
+  warning:
+    - performance regression without outage risk
+    - non-critical accessibility issue
+    - integration fragility
+    - code quality debt
+    - operational observability gap
+  info:
+    - optional refactor
+    - style suggestion
+    - documentation improvement
+
+fallback_matrix:
+  discovery:
+    prd-author:
+      - keel:pm
+    pm:
+      - keel:po
+    business-analyst:
+      - keel:planner
+    po:
+      - keel:pm
+    planner:
+      - keel:techlead
+    architect:
+      - keel:backend-architect
+      - keel:solutions-architect
+    techlead:
+      - keel:architect
+    design-principles:
+      - keel:techlead
+    test-planner:
+      - keel:tdd-specialist
+    tdd-specialist:
+      - keel:test-planner
+    backend-architect:
+      - keel:architect
+      - keel:solutions-architect
+    frontend-architect:
+      - keel:architect
+      - keel:ux-designer
+    hexagonal-architect:
+      - keel:backend-architect
+      - keel:architect
+    api-designer:
+      - keel:backend-architect
+      - keel:architect
+    data-architect:
+      - keel:backend-architect
+      - keel:dba
+    ux-designer:
+      - keel:frontend-architect
+      - keel:design-system-engineer
+    dba:
+      - keel:data-architect
+      - keel:backend-architect
+    security-reviewer:
+      - keel:compliance-reviewer
+      - keel:security-engineer
+    privacy-reviewer:
+      - keel:compliance-reviewer
+      - keel:security-reviewer
+    compliance-reviewer:
+      - keel:privacy-reviewer
+      - keel:security-reviewer
+    performance-engineer:
+      - keel:observability-engineer
+      - keel:sre
+    observability-engineer:
+      - keel:monitoring-specialist
+      - keel:sre
+    ai-engineer:
+      - keel:ml-engineer
+      - keel:prompt-engineer
+    rag-engineer:
+      - keel:ai-engineer
+      - keel:search-engineer
+    prompt-engineer:
+      - keel:ai-engineer
+      - keel:conversational-designer
+    llm-eval-specialist:
+      - keel:ai-engineer
+      - keel:qa
+    llm-safety-reviewer:
+      - keel:security-reviewer
+      - keel:ai-engineer
+    llm-cost-analyst:
+      - keel:cost-optimizer
+      - keel:ai-engineer
+    ml-engineer:
+      - keel:ai-engineer
+      - keel:data-engineer
+    agent-architect:
+      - keel:ai-engineer
+      - keel:architect
+    conversational-designer:
+      - keel:prompt-engineer
+      - keel:ux-designer
+    search-engineer:
+      - keel:rag-engineer
+      - keel:data-engineer
+  implement:
+    tasks-planner:
+      - keel:planner
+    work-item-mapper:
+      - keel:jira-confluence-specialist
+    tdd-specialist:
+      - keel:test-planner
+    reviewer:
+      - keel:code-quality
+      - keel:techlead
+    qa:
+      - keel:integration-qa
+      - keel:test-automation-engineer
+    techlead-audit:
+      - keel:architect
+      - keel:backend-architect
+    security-rev:
+      - keel:compliance-reviewer
+      - keel:security-engineer
+    privacy-rev:
+      - keel:compliance-reviewer
+    perf-eng:
+      - keel:observability-engineer
+    access-rev:
+      - keel:ux-designer
+    integ-qa:
+      - keel:test-automation-engineer
+    code-quality:
+      - keel:reviewer
+      - keel:techlead
+    docs-writer:
+      - keel:tech-writer
+    jira-confluence:
+      - keel:developer-relations
+    pm-uat:
+      - keel:po
+    backend-dev:
+      - keel:python-developer
+      - keel:techlead
+    frontend-dev:
+      - keel:react-developer
+      - keel:techlead
+    django-backend:
+      - keel:python-developer
+      - keel:backend-dev
+    django-frontend:
+      - keel:frontend-dev
+      - keel:react-developer
+    react-developer:
+      - keel:frontend-dev
+      - keel:typescript-developer
+    vue-developer:
+      - keel:frontend-dev
+      - keel:javascript-developer
+    typescript-developer:
+      - keel:javascript-developer
+      - keel:frontend-dev
+    javascript-developer:
+      - keel:typescript-developer
+      - keel:frontend-dev
+    python-developer:
+      - keel:backend-dev
+      - keel:django-backend
+    shell-developer:
+      - keel:devops
+      - keel:platform-dev
+    platform-dev:
+      - keel:devops
+      - keel:backend-dev
+    ai-engineer:
+      - keel:ml-engineer
+      - keel:prompt-engineer
+    rag-engineer:
+      - keel:ai-engineer
+      - keel:search-engineer
+    prompt-engineer:
+      - keel:ai-engineer
+      - keel:conversational-designer
+    llm-eval-specialist:
+      - keel:ai-engineer
+      - keel:qa
+    llm-safety-reviewer:
+      - keel:security-reviewer
+      - keel:ai-engineer
+    llm-cost-analyst:
+      - keel:cost-optimizer
+      - keel:ai-engineer
+  squad:
+    prd-author:
+      - keel:pm
+    inception-author:
+      - keel:tech-lead
+    tasks-planner:
+      - keel:planner
+    work-item-mapper:
+      - keel:jira-confluence-specialist
+    pm:
+      - keel:po
+    planner:
+      - keel:techlead
+    architect:
+      - keel:backend-architect
+      - keel:solutions-architect
+    reviewer:
+      - keel:code-quality
+      - keel:techlead
+    qa:
+      - keel:integration-qa
+      - keel:test-automation-engineer
+    techlead-audit:
+      - keel:architect
+    release:
+      - keel:sre
+    sre:
+      - keel:release
+    ai-engineer:
+      - keel:ml-engineer
+      - keel:prompt-engineer
+    rag-engineer:
+      - keel:ai-engineer
+      - keel:search-engineer
+    prompt-engineer:
+      - keel:ai-engineer
+      - keel:conversational-designer
+    llm-eval-specialist:
+      - keel:ai-engineer
+      - keel:qa
+    llm-safety-reviewer:
+      - keel:security-reviewer
+      - keel:ai-engineer
+    llm-cost-analyst:
+      - keel:cost-optimizer
+      - keel:ai-engineer
+  inception:
+    inception-author:
+      - keel:tech-lead
+  bug-fix:
+    work-item-mapper:
+      - keel:jira-confluence-specialist
+  hotfix:
+    work-item-mapper:
+      - keel:jira-confluence-specialist
+
+checkpoint_resume:
+  write_to_sep_log: true
+  fields:
+    - checkpoint_cursor
+    - completed_checkpoints
+    - resume_from
+    - fallback_invocations
+    - teammate_reliability
+  discovery:
+    checkpoints:
+      - preflight-passed
+      - gate-1-approved
+      - gate-2-approved
+      - gate-3-approved
+      - gate-4-approved
+      - specialist-bench-complete
+      - quality-baseline-complete
+      - blueprint-confirmed
+    resume_rule: resume from the highest completed checkpoint unless inputs materially changed
+  implement:
+    checkpoints:
+      - preflight-passed
+      - commands-confirmed
+      - blueprint-validated
+      - tdd-ready
+      - implementation-batch-complete
+      - reviewer-approved
+      - qa-pass
+      - conformance-pass
+      - quality-bench-cleared
+      - docs-complete
+      - uat-approved
+    resume_rule: resume from the highest completed checkpoint and only rerun failed downstream gates
+  squad:
+    checkpoints:
+      - preflight-passed
+      - discovery-confirmed
+      - implementation-complete
+      - release-signed-off
+    resume_rule: resume from the last completed phase boundary unless the user requests a full rerun
+
+reliability_metrics:
+  tracked:
+    - retry_count
+    - fallback_invocations
+    - checkpoint_cursor
+    - completed_checkpoints
+    - resume_from
+    - teammate_reliability
+    - tokens_input
+    - tokens_output
+    - estimated_cost_usd
+    - total_duration_ms
+    - teammate_durations
+  teammate_reliability_states:
+    - primary
+    - primary-after-retry
+    - fallback-used
+    - skipped-with-risk
+    - unresolved
+
+observability:
+  stale_in_flight:
+    enabled: true
+    stale_after_hours: 48
+    description: >
+      A SEP log with status=in_flight and last_updated_at older than
+      stale_after_hours is flagged as `stale-in-flight`. Added after the
+      2026-04-18 retrospective observed orphaned in-flight runs with no
+      freshness signal. /dashboard and /factory-retrospective MUST surface
+      these.
+    on_detection: "emit [Entropy] stale-in-flight: {{run_id}} | last_updated_at={{ts}} | age_hours={{age}}"
+  prompt_length_warning:
+    enabled: true
+    threshold_tokens: 40000
+    description: >
+      When the prompt assembled for a teammate exceeds the threshold, the
+      orchestrator MUST emit a warning. This complements compact_prompt_fallback
+      by catching pressure BEFORE the teammate starts, not after it fails.
+    emit: "[Prompt Length Warning] {{agent}} | prompt_tokens={{tokens}} | threshold={{threshold}} — consider compact-prompt spawn"
+  sep_log_schema:
+    required_fields:
+      - run_id
+      - skill
+      - timestamp
+      - last_updated_at
+      - final_status
+      - execution_mode
+      - architecture_style
+      - checkpoints
+      - fallbacks_invoked
+      - retry_count
+      - tokens_input
+      - tokens_output
+      - estimated_cost_usd
+      - total_duration_ms
+    teammate_fields:
+      - name
+      - subagent_type
+      - status
+      - tokens_input
+      - tokens_output
+      - duration_ms
+      - reliability_state
+    fallback_diagnostics:
+      fields:
+        - agent_duration_ms
+        - last_tool_before_failure
+      description: >
+        When a teammate fails and a fallback is invoked, record these additional fields
+        in the SEP log under the failed teammate's entry. agent_duration_ms captures how
+        long the primary ran before failing. last_tool_before_failure identifies the tool
+        call that preceded the silent exit (e.g. Read for mid-turn reviewer stops).
+    trace_lines:
+      - "[Preflight Start]"
+      - "[Preflight Warning]"
+      - "[Preflight Passed]"
+      - "[Team Created]"
+      - "[Teammate Spawned]"
+      - "[Teammate Done]"
+      - "[Teammate Retry]"
+      - "[Fallback Invoked]"
+      - "[Resume From]"
+      - "[Checkpoint Saved]"
+      - "[Gate]"
+      - "[Batch Spawned]"
+      - "[Cost Warning]"
+      - "[Doom Loop Detected]"
+      - "[Auto-Advanced]"
+      - "[Health Check]"
+      - "[Health Warning]"
+      - "[SEP Log Written]"
+  teammate_cards:
+    enabled: true
+    format: ascii            # ascii | compact | silent
+    description: >
+      After each teammate returns, the orchestrator pipes the Result Contract
+      metrics JSON through plugins/claude-tech-squad/scripts/render-teammate-card.sh
+      to print a compact inline card (tokens in/out, cost, duration, confidence,
+      gaps, artifacts). Set format to silent in CI.
+  pipeline_board:
+    enabled: true
+    include_budget_bar: true
+    include_artifacts: true
+    description: >
+      At the end of an orchestrator skill run, before writing the SEP log, the
+      orchestrator assembles a pipeline summary JSON and pipes it through
+      plugins/claude-tech-squad/scripts/render-pipeline-board.sh to print an
+      ASCII board (per-teammate rows, totals, budget bar, checkpoints, gates,
+      artifacts, sep log path).
+
+# ── Work-item taxonomy (vendor-neutral, configurable by team) ───────────────
+work_item_taxonomy:
+  levels:
+    - name: initiative
+      description: Strategic, cross-team work
+    - name: epic
+      description: Product-level value delivery
+    - name: story
+      description: Functional delivery with code
+    - name: task
+      description: Work without code (analysis, discovery, spike)
+    - name: subtask
+      description: Operational breakdown of any item above
+  defect_classification:
+    - name: defect
+      description: Issue in delivered functionality, not necessarily in production
+    - name: bug
+      description: Issue in active production
+  estimation:
+    effort_unit: hours       # hours | days | points
+    completion_unit: days    # hours | days | points
+
+# ── Delivery gates (opt-in, policy-driven) ──────────────────────────────────
+delivery_gates:
+  enabled: false
+  rules:
+    - id: code_requires_story_not_task
+      severity: WARNING
+      description: Items that produce code must be mapped as story, not task
+    - id: epic_needs_end_criterion
+      severity: WARNING
+      description: Epics need an explicit completion criterion unless tagged continuous
+    - id: qa_required_for_stories
+      severity: INFO
+      description: Stories should include a QA step in the flow

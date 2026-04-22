@@ -1,0 +1,287 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  command: bash /home/alex/claude-tech-squad/docs/assets/demo-script.sh
+  
+  cwd: /home/alex/claude-tech-squad
+  
+  env:
+    recording: true
+    TERM: xterm-256color
+  
+  cols: 100
+  rows: 36
+  
+  frameDelay: auto
+  maxIdleTime: 2000
+  
+  frameBox:
+    type: floating
+    title: claude-tech-squad
+    style:
+      boxShadow: none
+      margin: 0px
+  
+  watermark:
+    imagePath: null
+    style: null
+  
+  cursorStyle: block
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  fontSize: 13
+  lineHeight: 1.2
+  letterSpacing: 0
+  
+  theme:
+    background: "#1e1e2e"
+    foreground: "#cdd6f4"
+    cursor: "#f5e0dc"
+    black: "#45475a"
+    red: "#f38ba8"
+    green: "#a6e3a1"
+    yellow: "#f9e2af"
+    blue: "#89b4fa"
+    magenta: "#cba6f7"
+    cyan: "#89dceb"
+    white: "#bac2de"
+    brightBlack: "#585b70"
+    brightRed: "#f38ba8"
+    brightGreen: "#a6e3a1"
+    brightYellow: "#f9e2af"
+    brightBlue: "#89b4fa"
+    brightMagenta: "#cba6f7"
+    brightCyan: "#89dceb"
+    brightWhite: "#a6adc8"
+  
+# Records, feel free to edit them
+records:
+  - delay: 135
+    content: "\e[H\e[2J\e[3J"
+  - delay: 495
+    content: "\e[0;32m❯\e[0m "
+  - delay: 302
+    content: /
+  - delay: 36
+    content: c
+  - delay: 37
+    content: l
+  - delay: 36
+    content: a
+  - delay: 37
+    content: u
+  - delay: 36
+    content: d
+  - delay: 36
+    content: e
+  - delay: 37
+    content: '-'
+  - delay: 36
+    content: t
+  - delay: 37
+    content: e
+  - delay: 36
+    content: c
+  - delay: 36
+    content: h
+  - delay: 36
+    content: '-'
+  - delay: 36
+    content: s
+  - delay: 36
+    content: q
+  - delay: 36
+    content: u
+  - delay: 37
+    content: a
+  - delay: 36
+    content: d
+  - delay: 36
+    content: ':'
+  - delay: 37
+    content: d
+  - delay: 36
+    content: i
+  - delay: 36
+    content: s
+  - delay: 36
+    content: c
+  - delay: 36
+    content: o
+  - delay: 37
+    content: v
+  - delay: 36
+    content: e
+  - delay: 37
+    content: r
+  - delay: 36
+    content: 'y'
+  - delay: 37
+    content: ' '
+  - delay: 37
+    content: a
+  - delay: 36
+    content: d
+  - delay: 36
+    content: d
+  - delay: 37
+    content: ' '
+  - delay: 37
+    content: r
+  - delay: 36
+    content: e
+  - delay: 36
+    content: a
+  - delay: 37
+    content: l
+  - delay: 37
+    content: '-'
+  - delay: 36
+    content: t
+  - delay: 37
+    content: i
+  - delay: 36
+    content: m
+  - delay: 37
+    content: e
+  - delay: 36
+    content: ' '
+  - delay: 37
+    content: o
+  - delay: 36
+    content: r
+  - delay: 37
+    content: d
+  - delay: 36
+    content: e
+  - delay: 37
+    content: r
+  - delay: 36
+    content: ' '
+  - delay: 37
+    content: t
+  - delay: 36
+    content: r
+  - delay: 37
+    content: a
+  - delay: 37
+    content: c
+  - delay: 36
+    content: k
+  - delay: 37
+    content: i
+  - delay: 36
+    content: 'n'
+  - delay: 37
+    content: g
+  - delay: 37
+    content: ' '
+  - delay: 36
+    content: t
+  - delay: 36
+    content: o
+  - delay: 37
+    content: ' '
+  - delay: 36
+    content: t
+  - delay: 37
+    content: h
+  - delay: 36
+    content: e
+  - delay: 37
+    content: ' '
+  - delay: 36
+    content: c
+  - delay: 37
+    content: h
+  - delay: 36
+    content: e
+  - delay: 37
+    content: c
+  - delay: 36
+    content: k
+  - delay: 37
+    content: o
+  - delay: 36
+    content: u
+  - delay: 37
+    content: t
+  - delay: 37
+    content: ' '
+  - delay: 36
+    content: f
+  - delay: 36
+    content: l
+  - delay: 37
+    content: o
+  - delay: 36
+    content: w
+  - delay: 838
+    content: "\r\n\r\n"
+  - delay: 402
+    content: "\e[2mScanning repository stack...\e[0m\r\n"
+  - delay: 502
+    content: "\e[2mFound: FastAPI · PostgreSQL · React · Redis · Celery\e[0m\r\n\r\n"
+  - delay: 601
+    content: "\e[1m\e[0;36m[Team Created]\e[0m discovery\r\n"
+  - delay: 502
+    content: "\e[0;36m[Teammate Spawned]\e[0m pm       | pane: pm\r\n"
+  - delay: 301
+    content: "\e[0;36m[Teammate Spawned]\e[0m ba       | pane: ba\r\n"
+  - delay: 302
+    content: "\e[0;36m[Teammate Spawned]\e[0m po       | pane: po\r\n"
+  - delay: 601
+    content: "\r\n\e[1;33m[Gate 1]\e[0m Scope Validation\r\n\r\n  \e[1mPM Summary:\e[0m 3 user stories, 9 acceptance criteria\r\n  \e[1mPO Scope cut:\e[0m push notifications deferred to v2\r\n  \e[1mRecommended sprint:\e[0m 1 week, backend-first\r\n\r\n  Confirm scope and continue? \e[2m[y/n]\e[0m "
+  - delay: 802
+    content: 'y'
+  - delay: 101
+    content: "\r\n\r\n"
+  - delay: 502
+    content: "\e[0;36m[Teammate Spawned]\e[0m planner  | pane: planner\r\n"
+  - delay: 401
+    content: "\e[0;36m[Teammate Spawned]\e[0m architect | pane: architect\r\n"
+  - delay: 302
+    content: "\e[0;36m[Teammate Spawned]\e[0m techlead  | pane: techlead\r\n"
+  - delay: 801
+    content: "\r\n\e[1;33m[Gate 2]\e[0m Technical Tradeoffs\r\n\r\n  \e[1mPlanner:\e[0m WebSocket vs polling — WebSocket chosen (Celery + Redis pub/sub)\r\n  \e[1mRisk:\e[0m Redis connection pool sizing needs review\r\n\r\n  Approve technical direction? \e[2m[y/n]\e[0m "
+  - delay: 802
+    content: 'y'
+  - delay: 101
+    content: "\r\n\r\n"
+  - delay: 502
+    content: "\e[0;36m[Batch Spawned]\e[0m specialist-bench\r\n  \e[2mTeammates: backend-arch, api-designer, data-arch, dba, devops\e[0m\r\n"
+  - delay: 1201
+    content: "\r\n\e[0;36m[Teammate Done]\e[0m backend-arch   | \e[0;32mhexagonal layers defined\e[0m\r\n"
+  - delay: 202
+    content: "\e[0;36m[Teammate Done]\e[0m api-designer   | \e[0;32mWebSocket contract drafted\e[0m\r\n"
+  - delay: 201
+    content: "\e[0;36m[Teammate Done]\e[0m data-arch      | \e[0;32morder_events table + CDC strategy\e[0m\r\n"
+  - delay: 201
+    content: "\e[0;36m[Teammate Done]\e[0m dba            | \e[0;32mmigration safe — CONCURRENTLY index\e[0m\r\n"
+  - delay: 202
+    content: "\e[0;36m[Teammate Done]\e[0m devops         | \e[0;32mRedis pub/sub config defined\e[0m\r\n"
+  - delay: 802
+    content: "\r\n\e[0;36m[Batch Spawned]\e[0m quality-baseline\r\n  \e[2mTeammates: security-rev, privacy-rev, performance-eng\e[0m\r\n"
+  - delay: 1001
+    content: "\r\n\e[0;36m[Teammate Done]\e[0m security-rev   | \e[0;32mno auth gaps in WebSocket handshake\e[0m\r\n"
+  - delay: 202
+    content: "\e[0;36m[Teammate Done]\e[0m privacy-rev    | \e[0;32morder data masked in logs\e[0m\r\n"
+  - delay: 201
+    content: "\e[0;36m[Teammate Done]\e[0m performance-eng | \e[0;32mp99 < 200ms under 10k concurrent\e[0m\r\n"
+  - delay: 801
+    content: "\r\n\e[1;33m[Gate 3]\e[0m Architecture Direction\r\n\r\n  \e[1mTech Lead:\e[0m WebSocket gateway → Celery consumer → Redis pub/sub → client\r\n  \e[1mTDD plan:\e[0m 14 failing tests defined across 4 layers\r\n\r\n  Approve blueprint for implementation? \e[2m[y/n]\e[0m "
+  - delay: 802
+    content: 'y'
+  - delay: 102
+    content: "\r\n\r\n"
+  - delay: 501
+    content: "\e[0;36m[Teammate Spawned]\e[0m tdd-specialist | pane: tdd-specialist\r\n"
+  - delay: 602
+    content: "\e[0;36m[Teammate Done]\e[0m tdd-specialist | \e[0;32mTDD Delivery Plan ready — 14 failing tests\e[0m\r\n\r\n"
+  - delay: 501
+    content: "\e[1;33m[Gate 4]\e[0m Blueprint Confirmation\r\n\r\n  \e[1mDiscovery & Blueprint Document:\e[0m ready\r\n  \e[1mTDD Delivery Plan:\e[0m ready\r\n  \e[1mNext step:\e[0m run \e[1m/claude-tech-squad:implement\e[0m\r\n\r\n  Approve and proceed to implementation? \e[2m[y/n]\e[0m "
+  - delay: 802
+    content: 'y'
+  - delay: 101
+    content: "\r\n\r\n"
+  - delay: 501
+    content: "\e[0;32m\e[1mDiscovery complete.\e[0m\r\n\e[2mBlueprint saved. Run /claude-tech-squad:implement to build.\e[0m\r\n\r\n"
