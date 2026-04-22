@@ -1,4 +1,4 @@
-# CLAUDE.md — Working in the Keel Repository
+# CLAUDE.md — Working in the Cadre Repository
 
 These are the rules any AI coding assistant (including Claude Code) MUST follow when
 making changes in this repository. Human contributors are encouraged to follow them
@@ -105,7 +105,7 @@ When unsure, stop and ask.
 
 ## 8. Licensing awareness
 
-Keel is **BSL 1.1**, converting to **Apache 2.0** on **2030-04-21**.
+Cadre is **BSL 1.1**, converting to **Apache 2.0** on **2030-04-21**.
 
 - Do not add code under incompatible licenses (e.g. pure GPL, AGPL) without explicit
   approval.
@@ -116,7 +116,7 @@ Keel is **BSL 1.1**, converting to **Apache 2.0** on **2030-04-21**.
 
 ## 9. Contract-first changes
 
-Keel is contract-driven. Before changing agent, skill, policy, or template files in
+Cadre is contract-driven. Before changing agent, skill, policy, or template files in
 `packages/`, consider downstream consumers:
 
 - Runtime loaders in `services/runtime/`.
@@ -138,5 +138,5 @@ the PR description explaining the migration path.
 ---
 
 When in doubt, follow the rule that produces the least ambiguous, least decorative,
-least AI-branded artifact. Keel's public surface must look like a serious
+least AI-branded artifact. Cadre's public surface must look like a serious
 infrastructure project, not an AI demo.

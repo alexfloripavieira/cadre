@@ -1,16 +1,16 @@
-# Keel — Commercial Plan
+# Cadre — Commercial Plan
 
 ## Model: open-core + managed cloud
 
-Keel ships as a single open-source codebase under **BSL 1.1**, converting to
-**Apache 2.0** on 2030-04-21. On top of the open codebase, Keel offers a managed
+Cadre ships as a single open-source codebase under **BSL 1.1**, converting to
+**Apache 2.0** on 2030-04-21. On top of the open codebase, Cadre offers a managed
 cloud service with operational guarantees and premium connectors.
 
 ## Tiers
 
 ### Community (free, self-hosted)
 
-- Full Keel runtime under BSL 1.1.
+- Full Cadre runtime under BSL 1.1.
 - All agent/skill specs, templates, and runtime policy.
 - Multi-provider LLM support via LiteLLM (Anthropic, OpenAI, Google, Groq, local).
 - Docker Compose local dev stack.
@@ -19,7 +19,7 @@ cloud service with operational guarantees and premium connectors.
 
 ### Cloud (paid, managed)
 
-- Fully managed Keel runtime with SLA.
+- Fully managed Cadre runtime with SLA.
 - Horizontal autoscaling, multi-region failover, managed queue and checkpoint store.
 - Hosted dashboard with SEP log explorer, cost analytics, and golden-run diff viewer.
 - Premium connectors: Jira, Linear, GitHub Enterprise, Slack, PagerDuty, Datadog.
@@ -38,15 +38,15 @@ cloud service with operational guarantees and premium connectors.
 
 - **Source license:** BSL 1.1 during the change period (2026-04-21 → 2030-04-21),
   then Apache 2.0.
-- **Additional Use Grant:** you may use Keel in production and internally without
-  restriction. You may **not** offer Keel (or a substantially similar service) as
+- **Additional Use Grant:** you may use Cadre in production and internally without
+  restriction. You may **not** offer Cadre (or a substantially similar service) as
   a hosted/managed commercial service to third parties during the BSL period.
 - **Contributor License Agreement:** contributors retain copyright; contributions are
   licensed under the same terms as the project.
 
 ## Positioning
 
-Keel is **not** an LLM, a code generator, or a replacement for engineers. Keel is
+Cadre is **not** an LLM, a code generator, or a replacement for engineers. Cadre is
 the reliability layer between an AI engineering agent and the systems it touches.
 The commercial offering monetizes operational value (managed ops, SLAs, integrations),
 not the core runtime — which stays open.
@@ -77,6 +77,6 @@ Early customers work directly with the core team in exchange for:
 - Input on roadmap priorities.
 - Named case study (optional).
 
-Design partners must run Keel in a non-trivial AI engineering workflow (agentic
+Design partners must run Cadre in a non-trivial AI engineering workflow (agentic
 delivery pipeline, automated review, large-scale refactor automation, etc.) and
 commit to a monthly review cadence.

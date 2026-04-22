@@ -1,10 +1,10 @@
-import keel_runtime
+import cadre
 
 
 def test_package_importable():
-    assert keel_runtime is not None
+    assert cadre is not None
 
 
 def test_version_is_string():
-    assert isinstance(keel_runtime.__version__, str)
-    assert keel_runtime.__version__
+    assert isinstance(cadre.__version__, str)
+    assert cadre.__version__

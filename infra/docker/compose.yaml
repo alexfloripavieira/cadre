@@ -1,33 +1,33 @@
-name: keel-dev
+name: cadre-dev
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: keel-postgres
+    container_name: cadre-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: keel
-      POSTGRES_USER: keel
-      POSTGRES_PASSWORD: keel
+      POSTGRES_DB: cadre
+      POSTGRES_USER: cadre
+      POSTGRES_PASSWORD: cadre
     ports:
       - "5432:5432"
     volumes:
-      - keel-postgres-data:/var/lib/postgresql/data
+      - cadre-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keel -d keel"]
+      test: ["CMD-SHELL", "pg_isready -U cadre -d cadre"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   redis:
     image: redis:7-alpine
-    container_name: keel-redis
+    container_name: cadre-redis
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "6379:6379"
     volumes:
-      - keel-redis-data:/data
+      - cadre-redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -38,7 +38,7 @@ services:
     build:
       context: ../..
       dockerfile: infra/docker/runtime.Dockerfile
-    container_name: keel-runtime
+    container_name: cadre-runtime
     restart: unless-stopped
     depends_on:
       postgres:
@@ -46,9 +46,9 @@ services:
       redis:
         condition: service_healthy
     environment:
-      KEEL_DATABASE_URL: postgresql://keel:keel@postgres:5432/keel
-      KEEL_REDIS_URL: redis://redis:6379/0
-      KEEL_ENV: development
+      CADRE_DATABASE_URL: postgresql://cadre:cadre@postgres:5432/cadre
+      CADRE_REDIS_URL: redis://redis:6379/0
+      CADRE_ENV: development
     env_file:
       - ../../.env
     ports:
@@ -57,8 +57,8 @@ services:
       - ../../services/runtime:/app/services/runtime
       - ../../packages:/app/packages:ro
     working_dir: /app/services/runtime
-    command: ["uvicorn", "keel_runtime.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["uvicorn", "cadre.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 volumes:
-  keel-postgres-data:
-  keel-redis-data:
+  cadre-postgres-data:
+  cadre-redis-data:

@@ -1,6 +1,6 @@
-# keel-runtime
+# cadre (runtime)
 
-Python runtime for Keel — the reliability backbone for AI engineering agents.
+Python runtime powering Cadre — the agentic delivery plugin for Claude Code. Provides retry budget, multi-provider fallback, doom-loop detection, cost guardrails, checkpoint/resume, and SEP log writing that the Cadre skills and agents use under the hood.
 
 ## Install (editable)
 

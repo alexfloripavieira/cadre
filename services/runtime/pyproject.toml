@@ -3,14 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "keel-runtime"
+name = "cadre"
 version = "0.0.1"
-description = "Keel runtime — reliability backbone for AI engineering agents."
+description = "Cadre runtime — agentic delivery plugin for Claude Code."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "BUSL-1.1" }
 authors = [{ name = "Alexsander Vieira" }]
-keywords = ["llm", "agents", "reliability", "orchestration", "keel"]
+keywords = ["llm", "agents", "agentic", "orchestration", "claude-code", "cadre"]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
@@ -42,13 +42,13 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/alexfloripavieira/keel"
-Repository = "https://github.com/alexfloripavieira/keel"
-Issues = "https://github.com/alexfloripavieira/keel/issues"
+Homepage = "https://cadre.dev"
+Repository = "https://github.com/cadre-labs/cadre"
+Issues = "https://github.com/cadre-labs/cadre/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["keel_runtime*"]
+include = ["cadre*"]
 
 [tool.ruff]
 line-length = 100

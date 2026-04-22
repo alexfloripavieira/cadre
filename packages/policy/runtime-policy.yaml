@@ -248,234 +248,234 @@ severity_policy:
 fallback_matrix:
   discovery:
     prd-author:
-      - keel:pm
+      - cadre:pm
     pm:
-      - keel:po
+      - cadre:po
     business-analyst:
-      - keel:planner
+      - cadre:planner
     po:
-      - keel:pm
+      - cadre:pm
     planner:
-      - keel:techlead
+      - cadre:techlead
     architect:
-      - keel:backend-architect
-      - keel:solutions-architect
+      - cadre:backend-architect
+      - cadre:solutions-architect
     techlead:
-      - keel:architect
+      - cadre:architect
     design-principles:
-      - keel:techlead
+      - cadre:techlead
     test-planner:
-      - keel:tdd-specialist
+      - cadre:tdd-specialist
     tdd-specialist:
-      - keel:test-planner
+      - cadre:test-planner
     backend-architect:
-      - keel:architect
-      - keel:solutions-architect
+      - cadre:architect
+      - cadre:solutions-architect
     frontend-architect:
-      - keel:architect
-      - keel:ux-designer
+      - cadre:architect
+      - cadre:ux-designer
     hexagonal-architect:
-      - keel:backend-architect
-      - keel:architect
+      - cadre:backend-architect
+      - cadre:architect
     api-designer:
-      - keel:backend-architect
-      - keel:architect
+      - cadre:backend-architect
+      - cadre:architect
     data-architect:
-      - keel:backend-architect
-      - keel:dba
+      - cadre:backend-architect
+      - cadre:dba
     ux-designer:
-      - keel:frontend-architect
-      - keel:design-system-engineer
+      - cadre:frontend-architect
+      - cadre:design-system-engineer
     dba:
-      - keel:data-architect
-      - keel:backend-architect
+      - cadre:data-architect
+      - cadre:backend-architect
     security-reviewer:
-      - keel:compliance-reviewer
-      - keel:security-engineer
+      - cadre:compliance-reviewer
+      - cadre:security-engineer
     privacy-reviewer:
-      - keel:compliance-reviewer
-      - keel:security-reviewer
+      - cadre:compliance-reviewer
+      - cadre:security-reviewer
     compliance-reviewer:
-      - keel:privacy-reviewer
-      - keel:security-reviewer
+      - cadre:privacy-reviewer
+      - cadre:security-reviewer
     performance-engineer:
-      - keel:observability-engineer
-      - keel:sre
+      - cadre:observability-engineer
+      - cadre:sre
     observability-engineer:
-      - keel:monitoring-specialist
-      - keel:sre
+      - cadre:monitoring-specialist
+      - cadre:sre
     ai-engineer:
-      - keel:ml-engineer
-      - keel:prompt-engineer
+      - cadre:ml-engineer
+      - cadre:prompt-engineer
     rag-engineer:
-      - keel:ai-engineer
-      - keel:search-engineer
+      - cadre:ai-engineer
+      - cadre:search-engineer
     prompt-engineer:
-      - keel:ai-engineer
-      - keel:conversational-designer
+      - cadre:ai-engineer
+      - cadre:conversational-designer
     llm-eval-specialist:
-      - keel:ai-engineer
-      - keel:qa
+      - cadre:ai-engineer
+      - cadre:qa
     llm-safety-reviewer:
-      - keel:security-reviewer
-      - keel:ai-engineer
+      - cadre:security-reviewer
+      - cadre:ai-engineer
     llm-cost-analyst:
-      - keel:cost-optimizer
-      - keel:ai-engineer
+      - cadre:cost-optimizer
+      - cadre:ai-engineer
     ml-engineer:
-      - keel:ai-engineer
-      - keel:data-engineer
+      - cadre:ai-engineer
+      - cadre:data-engineer
     agent-architect:
-      - keel:ai-engineer
-      - keel:architect
+      - cadre:ai-engineer
+      - cadre:architect
     conversational-designer:
-      - keel:prompt-engineer
-      - keel:ux-designer
+      - cadre:prompt-engineer
+      - cadre:ux-designer
     search-engineer:
-      - keel:rag-engineer
-      - keel:data-engineer
+      - cadre:rag-engineer
+      - cadre:data-engineer
   implement:
     tasks-planner:
-      - keel:planner
+      - cadre:planner
     work-item-mapper:
-      - keel:jira-confluence-specialist
+      - cadre:jira-confluence-specialist
     tdd-specialist:
-      - keel:test-planner
+      - cadre:test-planner
     reviewer:
-      - keel:code-quality
-      - keel:techlead
+      - cadre:code-quality
+      - cadre:techlead
     qa:
-      - keel:integration-qa
-      - keel:test-automation-engineer
+      - cadre:integration-qa
+      - cadre:test-automation-engineer
     techlead-audit:
-      - keel:architect
-      - keel:backend-architect
+      - cadre:architect
+      - cadre:backend-architect
     security-rev:
-      - keel:compliance-reviewer
-      - keel:security-engineer
+      - cadre:compliance-reviewer
+      - cadre:security-engineer
     privacy-rev:
-      - keel:compliance-reviewer
+      - cadre:compliance-reviewer
     perf-eng:
-      - keel:observability-engineer
+      - cadre:observability-engineer
     access-rev:
-      - keel:ux-designer
+      - cadre:ux-designer
     integ-qa:
-      - keel:test-automation-engineer
+      - cadre:test-automation-engineer
     code-quality:
-      - keel:reviewer
-      - keel:techlead
+      - cadre:reviewer
+      - cadre:techlead
     docs-writer:
-      - keel:tech-writer
+      - cadre:tech-writer
     jira-confluence:
-      - keel:developer-relations
+      - cadre:developer-relations
     pm-uat:
-      - keel:po
+      - cadre:po
     backend-dev:
-      - keel:python-developer
-      - keel:techlead
+      - cadre:python-developer
+      - cadre:techlead
     frontend-dev:
-      - keel:react-developer
-      - keel:techlead
+      - cadre:react-developer
+      - cadre:techlead
     django-backend:
-      - keel:python-developer
-      - keel:backend-dev
+      - cadre:python-developer
+      - cadre:backend-dev
     django-frontend:
-      - keel:frontend-dev
-      - keel:react-developer
+      - cadre:frontend-dev
+      - cadre:react-developer
     react-developer:
-      - keel:frontend-dev
-      - keel:typescript-developer
+      - cadre:frontend-dev
+      - cadre:typescript-developer
     vue-developer:
-      - keel:frontend-dev
-      - keel:javascript-developer
+      - cadre:frontend-dev
+      - cadre:javascript-developer
     typescript-developer:
-      - keel:javascript-developer
-      - keel:frontend-dev
+      - cadre:javascript-developer
+      - cadre:frontend-dev
     javascript-developer:
-      - keel:typescript-developer
-      - keel:frontend-dev
+      - cadre:typescript-developer
+      - cadre:frontend-dev
     python-developer:
-      - keel:backend-dev
-      - keel:django-backend
+      - cadre:backend-dev
+      - cadre:django-backend
     shell-developer:
-      - keel:devops
-      - keel:platform-dev
+      - cadre:devops
+      - cadre:platform-dev
     platform-dev:
-      - keel:devops
-      - keel:backend-dev
+      - cadre:devops
+      - cadre:backend-dev
     ai-engineer:
-      - keel:ml-engineer
-      - keel:prompt-engineer
+      - cadre:ml-engineer
+      - cadre:prompt-engineer
     rag-engineer:
-      - keel:ai-engineer
-      - keel:search-engineer
+      - cadre:ai-engineer
+      - cadre:search-engineer
     prompt-engineer:
-      - keel:ai-engineer
-      - keel:conversational-designer
+      - cadre:ai-engineer
+      - cadre:conversational-designer
     llm-eval-specialist:
-      - keel:ai-engineer
-      - keel:qa
+      - cadre:ai-engineer
+      - cadre:qa
     llm-safety-reviewer:
-      - keel:security-reviewer
-      - keel:ai-engineer
+      - cadre:security-reviewer
+      - cadre:ai-engineer
     llm-cost-analyst:
-      - keel:cost-optimizer
-      - keel:ai-engineer
+      - cadre:cost-optimizer
+      - cadre:ai-engineer
   squad:
     prd-author:
-      - keel:pm
+      - cadre:pm
     inception-author:
-      - keel:tech-lead
+      - cadre:tech-lead
     tasks-planner:
-      - keel:planner
+      - cadre:planner
     work-item-mapper:
-      - keel:jira-confluence-specialist
+      - cadre:jira-confluence-specialist
     pm:
-      - keel:po
+      - cadre:po
     planner:
-      - keel:techlead
+      - cadre:techlead
     architect:
-      - keel:backend-architect
-      - keel:solutions-architect
+      - cadre:backend-architect
+      - cadre:solutions-architect
     reviewer:
-      - keel:code-quality
-      - keel:techlead
+      - cadre:code-quality
+      - cadre:techlead
     qa:
-      - keel:integration-qa
-      - keel:test-automation-engineer
+      - cadre:integration-qa
+      - cadre:test-automation-engineer
     techlead-audit:
-      - keel:architect
+      - cadre:architect
     release:
-      - keel:sre
+      - cadre:sre
     sre:
-      - keel:release
+      - cadre:release
     ai-engineer:
-      - keel:ml-engineer
-      - keel:prompt-engineer
+      - cadre:ml-engineer
+      - cadre:prompt-engineer
     rag-engineer:
-      - keel:ai-engineer
-      - keel:search-engineer
+      - cadre:ai-engineer
+      - cadre:search-engineer
     prompt-engineer:
-      - keel:ai-engineer
-      - keel:conversational-designer
+      - cadre:ai-engineer
+      - cadre:conversational-designer
     llm-eval-specialist:
-      - keel:ai-engineer
-      - keel:qa
+      - cadre:ai-engineer
+      - cadre:qa
     llm-safety-reviewer:
-      - keel:security-reviewer
-      - keel:ai-engineer
+      - cadre:security-reviewer
+      - cadre:ai-engineer
     llm-cost-analyst:
-      - keel:cost-optimizer
-      - keel:ai-engineer
+      - cadre:cost-optimizer
+      - cadre:ai-engineer
   inception:
     inception-author:
-      - keel:tech-lead
+      - cadre:tech-lead
   bug-fix:
     work-item-mapper:
-      - keel:jira-confluence-specialist
+      - cadre:jira-confluence-specialist
   hotfix:
     work-item-mapper:
-      - keel:jira-confluence-specialist
+      - cadre:jira-confluence-specialist
 
 checkpoint_resume:
   write_to_sep_log: true

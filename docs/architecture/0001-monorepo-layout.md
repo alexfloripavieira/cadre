@@ -6,7 +6,7 @@
 
 ## Context
 
-Keel is a reliability backbone for AI engineering agents. The system spans multiple
+Cadre is a reliability backbone for AI engineering agents. The system spans multiple
 concerns that will, over time, be implemented in different languages and deployed as
 separate services:
 
@@ -17,7 +17,7 @@ separate services:
   to be built in Go for deployment footprint and concurrency ergonomics.
 - **Web** — dashboard and admin UI. Planned TypeScript/React.
 
-In parallel, Keel ships **vendor-neutral assets** that are independent of any service:
+In parallel, Cadre ships **vendor-neutral assets** that are independent of any service:
 agent specs, skill specs, templates, and runtime policy. These assets must be
 consumable by any of the services and also by third parties.
 

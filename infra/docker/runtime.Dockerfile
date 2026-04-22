@@ -12,7 +12,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY services/runtime/pyproject.toml /app/services/runtime/pyproject.toml
-COPY services/runtime/keel_runtime /app/services/runtime/keel_runtime
+COPY services/runtime/cadre /app/services/runtime/cadre
 
 WORKDIR /app/services/runtime
 
@@ -21,4 +21,4 @@ RUN pip install --upgrade pip \
 
 EXPOSE 8000
 
-CMD ["uvicorn", "keel_runtime.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "cadre.api:app", "--host", "0.0.0.0", "--port", "8000"]
