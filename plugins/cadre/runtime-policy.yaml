@@ -704,3 +704,17 @@ policies:
       - ollama/llama3
     max_budget_usd: 0.50
     max_duration_seconds: 600
+
+  # Free-tier-only profile. Cycles through free-tier providers for smoke
+  # tests, CI, and dev without spending. Requires GROQ_API_KEY and/or
+  # OPENROUTER_API_KEY and/or GEMINI_API_KEY per the chain.
+  free-tier:
+    max_retries: 2
+    retry_delay_seconds: 1.0
+    retry_backoff_multiplier: 2.0
+    fallback_models:
+      - openrouter/deepseek/deepseek-chat-v3:free
+      - openrouter/meta-llama/llama-3.3-70b-instruct:free
+      - gemini/gemini-2.0-flash-exp
+    max_budget_usd: null
+    max_duration_seconds: 600
