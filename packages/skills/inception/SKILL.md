@@ -1,6 +1,27 @@
 ---
 name: inception
 description: Stand-alone technical refinement skill. Consumes an existing PRD and produces a validated TechSpec plus a viability / risk / gate / estimate report via the inception-author agent. Vendor-neutral, Context7-first, idempotent.
+
+authority_level: 2
+intent: >
+  Convert an approved PRD into a reviewable TechSpec with viability assessment,
+  risk register, delivery gates, and effort estimates — usable directly by
+  tasks-planner downstream.
+preconditions:
+  - "a validated PRD exists at ai-docs/prd-<slug>/prd.md"
+  - "repository stack and conventions are inspectable"
+success_criteria:
+  - "TechSpec conforms to templates/techspec-template.md"
+  - "viability, risks, gates, and estimates are populated with evidence"
+  - "result_contract and verification_checklist blocks are present and valid"
+candidate_agents:
+  - inception-author
+required_agents:
+  - inception-author
+policy_profile: default
+max_budget_usd: 3.00
+max_duration_seconds: 900
+max_review_cycles: 1
 ---
 
 # /inception — Technical Refinement

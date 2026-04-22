@@ -2,6 +2,28 @@
 name: work-item-mapper
 description: Maps a PRD/TechSpec/Tasks set (or a bug report) into the configured vendor-neutral work-item taxonomy defined in runtime-policy.yaml. Emits a structured work-items.md file and enforces opt-in delivery_gates rules. Handles defect vs bug classification for fixes.
 tool_allowlist: [Read, Write, Glob, Grep]
+
+role: work-item-mapper
+authority: producer
+inputs_required:
+  - upstream_artifact
+inputs_optional:
+  - prior_work_items
+  - bug_report
+outputs_produced:
+  - work_items_document
+invoke_when:
+  - "PRD, TechSpec, or Tasks are approved and delivery_gates.work_items is enabled"
+  - "bug report needs taxonomy classification (defect vs bug) before routing"
+  - "external tracker (Jira, Linear) requires a structured work-items manifest"
+avoid_when:
+  - "no upstream artifact exists"
+  - "delivery_gates.work_items is opt-out for this run"
+  - "work items already exist and match the current upstream artifacts"
+cost_profile: low
+typical_duration_seconds: 60
+requires_model_class: chat
+policy_profile: default
 ---
 
 # Work Item Mapper Agent

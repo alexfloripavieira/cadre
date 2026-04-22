@@ -2,6 +2,29 @@
 name: tasks-planner
 description: Decomposes a validated PRD + TechSpec into a sequenced, incremental task list with test subtasks. Produces tasks.md summary and individual task files using templates/tasks-template.md and templates/task-template.md. Max 15 main tasks. Vendor-neutral, idempotent.
 tool_allowlist: [Read, Write, Glob, Grep, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs]
+
+role: tasks-planner
+authority: producer
+inputs_required:
+  - prd_document
+  - techspec_document
+inputs_optional:
+  - prior_tasks
+outputs_produced:
+  - tasks_summary
+  - task_files
+invoke_when:
+  - "PRD and TechSpec are both approved"
+  - "existing task list is outdated after scope or architecture change"
+  - "implementation needs sequencing before execution can start"
+avoid_when:
+  - "PRD or TechSpec is missing or unapproved"
+  - "run is a single scripted step with no decomposition needed"
+  - "task breakdown already exists and matches current PRD and TechSpec"
+cost_profile: medium
+typical_duration_seconds: 240
+requires_model_class: reasoning
+policy_profile: default
 ---
 
 # Tasks Planner Agent

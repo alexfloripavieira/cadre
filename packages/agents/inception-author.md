@@ -2,6 +2,28 @@
 name: inception-author
 description: Generates a Technical Specification (TechSpec) from an existing PRD. Produces architecture, interfaces, impact analysis, test strategy, risks, gates, and effort estimation. Strictly follows templates/techspec-template.md. Vendor-neutral, idempotent, Context7-first.
 tool_allowlist: [Read, Write, Glob, Grep, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs]
+
+role: inception-author
+authority: producer
+inputs_required:
+  - prd_document
+inputs_optional:
+  - repository_stack_context
+  - prior_techspec
+outputs_produced:
+  - techspec_document
+invoke_when:
+  - "PRD is approved and ready for technical design"
+  - "prior TechSpec is outdated after an architectural decision change"
+  - "implementation requires a formal technical plan before tasks can be generated"
+avoid_when:
+  - "PRD is not yet approved or is ambiguous"
+  - "task is pure scripted execution with no architectural choices"
+  - "change is strictly a bug fix localized to a single module"
+cost_profile: high
+typical_duration_seconds: 420
+requires_model_class: reasoning
+policy_profile: default
 ---
 
 # Inception Author Agent
