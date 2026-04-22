@@ -2,8 +2,34 @@
 
 > A cadre of AI agents for serious software delivery.
 
-**Status:** alpha — not for production use. APIs and contracts will change.
+**Status:** archived at v0.1.0-alpha (2026-04-22). No active development.
 **License:** BSL 1.1, converts to Apache 2.0 on 2030-04-21.
+
+---
+
+## Project status — archived
+
+This repository is paused at v0.1.0-alpha. The reliability runtime
+(`services/runtime/cadre/`) is complete and tested (90 passing tests,
+CI green on Python 3.11 and 3.12). The plugin surface under
+`plugins/cadre/` is declarative and contract-validated. No further
+implementation is planned at this time.
+
+Reason: the original goal that motivated this codebase — helping a
+developer work without failures — is better served by
+[claude-tech-squad](https://github.com/alexfloripavieira/claude-tech-squad),
+which is mature, installable via the Claude Code marketplace, and
+covers the full software delivery surface with 79 specialist agents
+and 26 skills.
+
+Cadre as built targets a different audience: the backend engineer who
+embeds LLM calls inside a production application and needs retry,
+fallback, budget, and audit primitives as infrastructure. If that is
+your use case, the runtime is importable as a Python package and the
+code works as documented. If you build on it, open an issue.
+
+The repository remains public as reference material and as a potential
+starting point if the reliability-runtime use case becomes concrete.
 
 ---
 

@@ -1,5 +1,9 @@
 # CLAUDE.md — Working in the Cadre Repository
 
+> **Repository status:** archived at v0.1.0-alpha (2026-04-22).
+> No active development. See `README.md` for context.
+> Rules below still apply to any contributor that opens a PR.
+
 These are the rules any AI coding assistant (including Claude Code) MUST follow when
 making changes in this repository. Human contributors are encouraged to follow them
 too, but for automated assistants they are non-negotiable.

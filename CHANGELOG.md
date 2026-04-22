@@ -4,6 +4,28 @@ All notable changes to Cadre are recorded here. Format follows Keep a
 Changelog. Version numbers follow semver-ish (pre-1.0 may introduce
 breaking changes in minor versions; see `CONTRIBUTING.md`).
 
+## [0.1.0-alpha-final] — 2026-04-22
+
+Repository archived. No further development planned at this time. The
+reliability runtime and plugin surface are complete and tested as of
+this tag. See `README.md` for rationale and pointer to the active
+sibling project `claude-tech-squad`.
+
+### Added in this final cut
+- ADR 0006 — context window management (`docs/architecture/0006-context-rollover.md`).
+- `context-summarizer` advisor agent (`plugins/cadre/agents/context-summarizer.md`).
+- `/rollover` and `/resume` skills (`plugins/cadre/skills/`).
+- PreCompact hook template (`plugins/cadre/hooks/pre-compact.sh`).
+- Token ledger on `Runtime.call`, per-run context thresholds emitted as
+  `context_advisory` and `context_rollover_suggested` SEP events.
+- 11 new tests (`services/runtime/tests/test_context_rollover.py`).
+
+### Final state
+- 90 Python tests passing on 3.11 and 3.12.
+- 6 ADRs (0001–0006).
+- 9 agents, 6 skills, 5 policy profiles.
+- Plugin manifest + Claude Code marketplace manifest declared.
+
 ## [Unreleased]
 
 ### Added
