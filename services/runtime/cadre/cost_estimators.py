@@ -32,8 +32,41 @@ def litellm_cost_estimator(model: str, response: Any) -> float:
         import litellm
     except ImportError:
         return 0.0
+    direct = _litellm_completion_cost(litellm, response)
+    if direct > 0:
+        return direct
+    manual = _litellm_manual_cost(litellm, model, response)
+    if manual > 0:
+        return manual
+    return 0.0
+
+
+def _litellm_completion_cost(litellm_module: Any, response: Any) -> float:
     try:
-        return float(litellm.completion_cost(completion_response=response))
+        value = litellm_module.completion_cost(completion_response=response)
+        return float(value) if value else 0.0
+    except Exception:
+        return 0.0
+
+
+def _litellm_manual_cost(litellm_module: Any, model: str, response: Any) -> float:
+    try:
+        model_cost = getattr(litellm_module, "model_cost", None)
+        if not isinstance(model_cost, dict):
+            return 0.0
+        entry = model_cost.get(model)
+        if entry is None and "/" in model:
+            entry = model_cost.get(model.split("/", 1)[1])
+        if not isinstance(entry, dict):
+            return 0.0
+        input_per_token = float(entry.get("input_cost_per_token", 0.0) or 0.0)
+        output_per_token = float(entry.get("output_cost_per_token", 0.0) or 0.0)
+        usage = _extract_usage(response)
+        if usage is None:
+            return 0.0
+        prompt = float(usage.get("prompt_tokens", 0))
+        completion = float(usage.get("completion_tokens", 0))
+        return round(prompt * input_per_token + completion * output_per_token, 6)
     except Exception:
         return 0.0
 

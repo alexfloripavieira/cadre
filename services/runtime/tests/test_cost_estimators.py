@@ -52,6 +52,39 @@ def test_litellm_cost_estimator_returns_zero_when_litellm_absent(monkeypatch):
     assert litellm_cost_estimator("any/model", {"anything": True}) == 0.0
 
 
+def test_litellm_estimator_falls_back_to_manual_when_completion_cost_returns_zero(monkeypatch):
+    import sys
+    import types
+
+    fake_litellm = types.SimpleNamespace(
+        completion_cost=lambda **kwargs: 0.0,
+        model_cost={
+            "groq/llama-3.3-70b-versatile": {
+                "input_cost_per_token": 5.9e-07,
+                "output_cost_per_token": 7.9e-07,
+            }
+        },
+    )
+    monkeypatch.setitem(sys.modules, "litellm", fake_litellm)
+
+    response = {"usage": {"prompt_tokens": 500, "completion_tokens": 200}}
+    cost = litellm_cost_estimator("groq/llama-3.3-70b-versatile", response)
+    expected = round(500 * 5.9e-07 + 200 * 7.9e-07, 6)
+    assert cost == expected
+
+
+def test_litellm_estimator_uses_completion_cost_when_available(monkeypatch):
+    import sys
+    import types
+
+    fake_litellm = types.SimpleNamespace(
+        completion_cost=lambda **kwargs: 0.0042,
+        model_cost={},
+    )
+    monkeypatch.setitem(sys.modules, "litellm", fake_litellm)
+    assert litellm_cost_estimator("any/model", {"usage": {}}) == 0.0042
+
+
 def test_priced_estimator_computes_cost_from_object_response():
     pricing = {
         "m/1": ModelPricing(input_per_1k_tokens_usd=0.002, output_per_1k_tokens_usd=0.004),
