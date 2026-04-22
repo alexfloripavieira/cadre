@@ -48,6 +48,8 @@ class Runtime:
         self._checkpoint_store = checkpoint_store
         self._budget_used_by_run: dict[str, float] = {}
         self._step_by_run: dict[str, int] = {}
+        self._tokens_used_by_run: dict[str, int] = {}
+        self._context_events_emitted: dict[str, set[str]] = {}
 
     @property
     def sep_log(self) -> SEPLogger:
@@ -60,9 +62,14 @@ class Runtime:
     def budget_used(self, run_id: str) -> float:
         return self._budget_used_by_run.get(run_id, 0.0)
 
+    def tokens_used(self, run_id: str) -> int:
+        return self._tokens_used_by_run.get(run_id, 0)
+
     def reset_run(self, run_id: str) -> None:
         self._budget_used_by_run.pop(run_id, None)
         self._step_by_run.pop(run_id, None)
+        self._tokens_used_by_run.pop(run_id, None)
+        self._context_events_emitted.pop(run_id, None)
 
     def call(
         self,
@@ -158,6 +165,10 @@ class Runtime:
                 self._budget_used_by_run[resolved_run_id] = (
                     self._budget_used_by_run.get(resolved_run_id, 0.0) + cost
                 )
+                tokens_this_attempt = _extract_total_tokens(response)
+                self._tokens_used_by_run[resolved_run_id] = (
+                    self._tokens_used_by_run.get(resolved_run_id, 0) + tokens_this_attempt
+                )
 
                 logged.append(
                     self._sep_log.write(
@@ -174,10 +185,16 @@ class Runtime:
                             "run_budget_used_usd": round(
                                 self._budget_used_by_run[resolved_run_id], 6
                             ),
+                            "tokens_this_attempt": tokens_this_attempt,
+                            "tokens_run_total": self._tokens_used_by_run[resolved_run_id],
                             "duration_seconds": round(duration, 4),
                         },
                     )
                 )
+                context_events = self._maybe_emit_context_events(
+                    resolved_run_id, agent_role, phase, active_policy
+                )
+                logged.extend(context_events)
 
                 result = CallResult(
                     response=response,
@@ -274,6 +291,58 @@ class Runtime:
         except Exception:
             return 0.0
 
+    def _maybe_emit_context_events(
+        self,
+        run_id: str,
+        agent_role: str,
+        phase: Phase,
+        policy: Policy,
+    ) -> list[dict]:
+        emitted: list[dict] = []
+        used = self._tokens_used_by_run.get(run_id, 0)
+        seen = self._context_events_emitted.setdefault(run_id, set())
+
+        hard = policy.context_hard_threshold_tokens
+        if hard is not None and used >= hard and "hard" not in seen:
+            emitted.append(
+                self._sep_log.write(
+                    run_id,
+                    {
+                        "phase": phase,
+                        "agent_role": agent_role,
+                        "outcome": "context_rollover_suggested",
+                        "tokens_run_total": used,
+                        "threshold_tokens": hard,
+                        "severity": "hard",
+                    },
+                )
+            )
+            seen.add("hard")
+
+        advisory = policy.context_advisory_threshold_tokens
+        if (
+            advisory is not None
+            and used >= advisory
+            and "advisory" not in seen
+            and "hard" not in seen
+        ):
+            emitted.append(
+                self._sep_log.write(
+                    run_id,
+                    {
+                        "phase": phase,
+                        "agent_role": agent_role,
+                        "outcome": "context_advisory",
+                        "tokens_run_total": used,
+                        "threshold_tokens": advisory,
+                        "severity": "soft",
+                    },
+                )
+            )
+            seen.add("advisory")
+
+        return emitted
+
     def _maybe_checkpoint(self, run_id: str, data: dict[str, Any]) -> None:
         if self._checkpoint_store is None:
             return
@@ -286,3 +355,29 @@ class Runtime:
 
 def _error_signature(exc: Exception) -> tuple[str, str]:
     return (type(exc).__name__, str(exc)[:50])
+
+
+def _extract_total_tokens(response: Any) -> int:
+    usage = _get_attr_or_key(response, "usage")
+    if usage is None:
+        return 0
+    prompt = _get_attr_or_key(usage, "prompt_tokens") or 0
+    completion = _get_attr_or_key(usage, "completion_tokens") or 0
+    total = _get_attr_or_key(usage, "total_tokens")
+    if total is not None:
+        try:
+            return int(total)
+        except (TypeError, ValueError):
+            return 0
+    try:
+        return int(prompt) + int(completion)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _get_attr_or_key(obj: Any, key: str) -> Any:
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        return obj.get(key)
+    return getattr(obj, key, None)

@@ -13,6 +13,8 @@ class Policy:
     max_budget_usd: float | None = None
     max_duration_seconds: float | None = None
     doom_loop_same_error_threshold: int = 0
+    context_advisory_threshold_tokens: int | None = None
+    context_hard_threshold_tokens: int | None = None
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "Policy":
@@ -45,6 +47,31 @@ class Policy:
         if self.doom_loop_same_error_threshold == 1:
             raise PolicyError(
                 "doom_loop_same_error_threshold of 1 is meaningless; use 0 to disable or >= 2"
+            )
+        if (
+            self.context_advisory_threshold_tokens is not None
+            and self.context_advisory_threshold_tokens <= 0
+        ):
+            raise PolicyError(
+                f"context_advisory_threshold_tokens must be > 0 when set, "
+                f"got {self.context_advisory_threshold_tokens}"
+            )
+        if (
+            self.context_hard_threshold_tokens is not None
+            and self.context_hard_threshold_tokens <= 0
+        ):
+            raise PolicyError(
+                f"context_hard_threshold_tokens must be > 0 when set, "
+                f"got {self.context_hard_threshold_tokens}"
+            )
+        if (
+            self.context_advisory_threshold_tokens is not None
+            and self.context_hard_threshold_tokens is not None
+            and self.context_advisory_threshold_tokens >= self.context_hard_threshold_tokens
+        ):
+            raise PolicyError(
+                "context_advisory_threshold_tokens must be strictly less than "
+                "context_hard_threshold_tokens"
             )
 
     def backoff_delay(self, attempt: int) -> float:

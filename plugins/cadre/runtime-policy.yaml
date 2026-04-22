@@ -676,6 +676,8 @@ policies:
     fallback_models: []
     max_budget_usd: null
     max_duration_seconds: null
+    context_advisory_threshold_tokens: 100000
+    context_hard_threshold_tokens: 140000
 
   orchestrator:
     max_retries: 2
@@ -684,6 +686,8 @@ policies:
     fallback_models: []
     max_budget_usd: 1.00
     max_duration_seconds: 60
+    context_advisory_threshold_tokens: 100000
+    context_hard_threshold_tokens: 140000
 
   standard-delivery:
     max_retries: 3
@@ -694,6 +698,8 @@ policies:
       - groq/llama-3.3-70b
     max_budget_usd: 5.00
     max_duration_seconds: 1800
+    context_advisory_threshold_tokens: 100000
+    context_hard_threshold_tokens: 140000
 
   low-cost:
     max_retries: 2
