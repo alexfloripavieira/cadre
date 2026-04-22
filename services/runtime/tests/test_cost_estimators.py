@@ -57,8 +57,6 @@ def test_priced_estimator_computes_cost_from_object_response():
         "m/1": ModelPricing(input_per_1k_tokens_usd=0.002, output_per_1k_tokens_usd=0.004),
     }
     estimator = PricedCostEstimator(pricing)
-    response = SimpleNamespace(
-        usage=SimpleNamespace(prompt_tokens=500, completion_tokens=500)
-    )
+    response = SimpleNamespace(usage=SimpleNamespace(prompt_tokens=500, completion_tokens=500))
     cost = estimator("m/1", response)
     assert cost == round(0.001 + 0.002, 6)

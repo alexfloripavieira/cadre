@@ -1,6 +1,7 @@
 import uuid
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal, Mapping
+from typing import Any, Literal
 
 from .errors import CadreError
 from .policy import Policy
@@ -75,7 +76,8 @@ class SkillRunner:
         policy_loader: PolicyLoader | None = None,
         model_for_role: Callable[[AgentSpec], str] | None = None,
         planner: Planner = required_order_planner,
-        message_builder: Callable[[SkillSpec, PlannedStep, Mapping[str, Any]], list[dict]] | None = None,
+        message_builder: Callable[[SkillSpec, PlannedStep, Mapping[str, Any]], list[dict]]
+        | None = None,
     ) -> None:
         self._runtime = runtime
         self._agents = agent_registry

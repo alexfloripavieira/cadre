@@ -46,15 +46,51 @@ jobs:
           pip install pytest
           pytest -q
 
-  policy-lint:
-    name: policy lint (yaml)
+  plugin-contracts:
+    name: plugin contracts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
       - name: Validate runtime-policy.yaml
         run: |
-          python -c "import yaml, sys; yaml.safe_load(open('packages/policy/runtime-policy.yaml'))"
+          python -c "import yaml; yaml.safe_load(open('plugins/cadre/runtime-policy.yaml'))"
+
+      - name: Validate plugin manifests (JSON)
+        run: |
+          python -c "import json; json.load(open('.claude-plugin/marketplace.json'))"
+          python -c "import json; json.load(open('plugins/cadre/.claude-plugin/plugin.json'))"
+
+      - name: Validate agent and skill spec frontmatter
+        run: |
+          python <<'PY'
+          import yaml
+          import pathlib
+          agent_required = {
+              "role","authority","inputs_required","outputs_produced",
+              "invoke_when","avoid_when","cost_profile",
+              "typical_duration_seconds","requires_model_class","policy_profile",
+          }
+          for p in sorted(pathlib.Path("plugins/cadre/agents").glob("*.md")):
+              _, fm, _ = p.read_text().split("---", 2)
+              data = yaml.safe_load(fm)
+              missing = agent_required - set(data.keys())
+              assert not missing, f"{p.name} missing spec-card fields: {missing}"
+          for p in sorted(pathlib.Path("plugins/cadre/skills").rglob("SKILL.md")):
+              _, fm, _ = p.read_text().split("---", 2)
+              data = yaml.safe_load(fm)
+              assert "authority_level" in data, f"{p} missing authority_level"
+              assert data["authority_level"] in (1, 2, 3), f"{p} invalid authority_level"
+          print("all specs validated")
+          PY
 
   scripts:
     name: scripts (shellcheck)

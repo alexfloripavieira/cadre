@@ -55,9 +55,7 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
     _, raw_frontmatter, body = parts
     data = yaml.safe_load(raw_frontmatter) or {}
     if not isinstance(data, dict):
-        raise SpecError(
-            f"frontmatter must be a mapping, got {type(data).__name__}"
-        )
+        raise SpecError(f"frontmatter must be a mapping, got {type(data).__name__}")
     return data, body.lstrip()
 
 

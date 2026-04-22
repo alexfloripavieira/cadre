@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +19,7 @@ class SEPLogger:
 
     def write(self, run_id: str, entry: dict[str, Any]) -> dict[str, Any]:
         enriched = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "run_id": run_id,
             **entry,
         }

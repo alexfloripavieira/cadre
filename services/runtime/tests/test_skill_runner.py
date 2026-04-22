@@ -11,9 +11,7 @@ from cadre import (
     SkillRunner,
     load_skill_spec,
 )
-from cadre.errors import CadreError
 from cadre.skill_runner import SkillRunError, required_order_planner
-
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "cadre"

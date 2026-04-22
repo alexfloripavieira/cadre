@@ -46,7 +46,9 @@ class PolicyLoader:
 
     def raw_profile(self, name: str) -> dict[str, Any]:
         if name not in self._profiles:
-            raise PolicyError(f"policy profile '{name}' not found; available: {self.profile_names()}")
+            raise PolicyError(
+                f"policy profile '{name}' not found; available: {self.profile_names()}"
+            )
         return dict(self._profiles[name])
 
     def resolve(self, name: str) -> Policy:

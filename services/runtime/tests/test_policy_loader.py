@@ -4,7 +4,6 @@ from cadre.errors import PolicyError
 from cadre.policy import Policy
 from cadre.policy_loader import PolicyLoader
 
-
 YAML_SAMPLE = """
 policies:
   default:

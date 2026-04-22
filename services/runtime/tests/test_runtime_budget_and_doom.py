@@ -226,8 +226,12 @@ def test_runtime_writes_checkpoint_on_each_success(tmp_path):
     runtime = build_runtime(tmp_path, fake_success_with_cost(0.01), checkpoint_store=store)
     policy = Policy(max_retries=3, retry_delay_seconds=0.0)
 
-    runtime.call(run_id="cp-1", agent_role="a", phase="plan", model="m/1", messages=[], policy=policy)
-    runtime.call(run_id="cp-1", agent_role="b", phase="execute", model="m/1", messages=[], policy=policy)
+    runtime.call(
+        run_id="cp-1", agent_role="a", phase="plan", model="m/1", messages=[], policy=policy
+    )
+    runtime.call(
+        run_id="cp-1", agent_role="b", phase="execute", model="m/1", messages=[], policy=policy
+    )
 
     checkpoints = store.all("cp-1")
     assert [c["step_id"] for c in checkpoints] == [1, 2]

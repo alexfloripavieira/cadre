@@ -51,9 +51,7 @@ def test_load_skill_spec_reads_real_inception(tmp_path):
 
 def test_load_skill_spec_rejects_invalid_authority_level(tmp_path):
     bad = tmp_path / "bad.md"
-    bad.write_text(
-        "---\nname: bad\nauthority_level: 9\nintent: test\n---\n\nbody\n"
-    )
+    bad.write_text("---\nname: bad\nauthority_level: 9\nintent: test\n---\n\nbody\n")
     with pytest.raises(SpecError, match="authority_level must be 1, 2, or 3"):
         load_skill_spec(bad)
 
@@ -70,7 +68,13 @@ def test_agent_registry_loads_all_from_plugin_dir():
     registry = AgentRegistry(repo_root / "plugins" / "cadre" / "agents")
     agents = registry.load_all()
     names = {a.name for a in agents}
-    assert {"prd-author", "inception-author", "tasks-planner", "work-item-mapper", "orchestrator"} <= names
+    assert {
+        "prd-author",
+        "inception-author",
+        "tasks-planner",
+        "work-item-mapper",
+        "orchestrator",
+    } <= names
 
 
 def test_agent_registry_load_unknown_role_raises(tmp_path):

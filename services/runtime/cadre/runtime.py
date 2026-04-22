@@ -1,8 +1,9 @@
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 from .checkpoint import CheckpointStore
 from .errors import (
@@ -197,9 +198,7 @@ class Runtime:
                         "fell_back": not is_primary,
                         "attempt_overall": total_attempts,
                         "cost_usd": round(cost, 6),
-                        "run_budget_used_usd": round(
-                            self._budget_used_by_run[resolved_run_id], 6
-                        ),
+                        "run_budget_used_usd": round(self._budget_used_by_run[resolved_run_id], 6),
                     },
                 )
 

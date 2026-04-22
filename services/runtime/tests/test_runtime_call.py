@@ -170,9 +170,7 @@ def test_fallback_triggers_when_primary_exhausted(tmp_path):
 
 
 def test_fallback_second_level_when_primary_and_first_fallback_fail(tmp_path):
-    provider = PerModelProvider(
-        {"primary/x": "fail", "fallback1/y": "fail", "fallback2/z": "ok"}
-    )
+    provider = PerModelProvider({"primary/x": "fail", "fallback1/y": "fail", "fallback2/z": "ok"})
     runtime = build_runtime(tmp_path, provider)
     policy = Policy(
         max_retries=2,

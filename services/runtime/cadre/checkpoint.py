@@ -1,9 +1,10 @@
 import json
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS checkpoints (
@@ -41,7 +42,7 @@ class CheckpointStore:
 
     def save(self, run_id: str, step_id: int, label: str, data: dict[str, Any]) -> None:
         payload = json.dumps(data, ensure_ascii=False, sort_keys=True)
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         with self._connect() as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO checkpoints(run_id, step_id, label, data_json, created_at) "
