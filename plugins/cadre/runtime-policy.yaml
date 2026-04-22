@@ -663,3 +663,44 @@ delivery_gates:
     - id: qa_required_for_stories
       severity: INFO
       description: Stories should include a QA step in the flow
+
+# ── Cadre v0.1 runtime policies (ADR 0004, 0005) ────────────────────────────
+# Consumed by cadre.policy.PolicyLoader.resolve(profile_name).
+# Each profile maps directly to the Policy dataclass fields in
+# services/runtime/cadre/policy.py. Unknown fields are rejected by the loader.
+policies:
+  default:
+    max_retries: 3
+    retry_delay_seconds: 1.0
+    retry_backoff_multiplier: 2.0
+    fallback_models: []
+    max_budget_usd: null
+    max_duration_seconds: null
+
+  orchestrator:
+    max_retries: 2
+    retry_delay_seconds: 0.5
+    retry_backoff_multiplier: 2.0
+    fallback_models: []
+    max_budget_usd: 1.00
+    max_duration_seconds: 60
+
+  standard-delivery:
+    max_retries: 3
+    retry_delay_seconds: 1.0
+    retry_backoff_multiplier: 2.0
+    fallback_models:
+      - openai/gpt-4.1
+      - groq/llama-3.3-70b
+    max_budget_usd: 5.00
+    max_duration_seconds: 1800
+
+  low-cost:
+    max_retries: 2
+    retry_delay_seconds: 0.5
+    retry_backoff_multiplier: 2.0
+    fallback_models:
+      - groq/llama-3.3-70b
+      - ollama/llama3
+    max_budget_usd: 0.50
+    max_duration_seconds: 600
