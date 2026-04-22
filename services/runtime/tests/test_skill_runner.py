@@ -179,6 +179,16 @@ def test_custom_planner_is_invoked(tmp_path):
     assert result.status == "completed"
 
 
+@pytest.mark.parametrize("skill_name", ["implement", "bug-fix", "review"])
+def test_shipped_skills_run_end_to_end_with_fake_provider(tmp_path, skill_name):
+    runner = build_runner(tmp_path)
+    skill = load_skill_spec(PLUGIN_DIR / "skills" / skill_name / "SKILL.md")
+    result = runner.run(skill=skill, task_input={"intent": "smoke test"})
+    assert result.status == "completed"
+    assert len(result.step_outcomes) == len(skill.required_agents)
+    assert all(o.status == "success" for o in result.step_outcomes)
+
+
 def test_runner_aggregates_total_cost(tmp_path):
     def priced_provider(*, model, messages, **kwargs):
         return {"id": f"ok-{model}", "_cost": 0.10}
